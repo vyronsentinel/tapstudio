@@ -24,8 +24,8 @@
             --mono:    'DM Mono', monospace;
         }
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        html{scroll-behavior:smooth}
-        body{font-family:var(--sans);background:var(--bg);color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+        html{scroll-behavior:smooth;overflow-x:hidden}
+        body{font-family:var(--sans);background:var(--bg);color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased;width:100%}
         ::selection{background:var(--gold);color:#000}
         ::-webkit-scrollbar{width:3px}
         ::-webkit-scrollbar-track{background:var(--bg)}
@@ -53,7 +53,7 @@
         .nav-cta:hover span{color:var(--bg)}
 
         /* ── HERO ── */
-        .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;position:relative}
+        .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;position:relative;width:100%}
         .hero-left{display:flex;flex-direction:column;justify-content:center;padding:150px 72px 80px;z-index:2}
         .hero-eye{font-family:var(--mono);font-size:.62rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;display:flex;align-items:center;gap:14px;opacity:0;animation:upIn .9s cubic-bezier(.16,1,.3,1) .3s forwards}
         .hero-eye::before{content:'';width:36px;height:1px;background:linear-gradient(to right,transparent,var(--gold))}
@@ -270,16 +270,16 @@
             .hero-h1{font-size:clamp(44px,12vw,62px);line-height:.92}
             .hero-eye{font-size:.58rem;letter-spacing:.35em;margin-bottom:20px}
             .hero-body{font-size:.9rem;max-width:100%;margin-bottom:36px}
-            .hero-btns{gap:10px}
+            .hero-btns{gap:10px;flex-direction:column;align-items:flex-start}
             .btn{font-size:.58rem;padding:14px 24px}
-            .hero-stats{gap:28px;margin-top:40px;padding-top:24px;flex-wrap:wrap}
-            .sval{font-size:2rem}
+            .hero-stats{gap:20px;margin-top:36px;padding-top:20px;flex-wrap:wrap;justify-content:flex-start}
+            .sval{font-size:1.8rem}
             .skey{font-size:.5rem}
 
             /* SECTIONS */
             .sec{padding:72px 20px}
             .lbl{font-size:.54rem;letter-spacing:.35em;margin-bottom:12px}
-            .sth{font-size:clamp(30px,8vw,44px)}
+            .sth{font-size:clamp(28px,8vw,44px)}
 
             /* MARQUEE */
             .marquee-track span{font-size:1.1rem;padding:0 22px}
@@ -299,10 +299,10 @@
             .price-sub{font-size:.86rem}
             .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
             .tb{font-size:.55rem;padding:14px 20px;white-space:nowrap}
-            .pgrid{gap:2px}
+            .pgrid{gap:2px;grid-template-columns:1fr}
             .pc{padding:36px 24px}
             .pc-price{font-size:3.2rem}
-            .agrid{grid-template-columns:1fr 1fr}
+            .agrid{grid-template-columns:1fr}
             .ac{padding:28px 20px}
 
             /* REVIEWS */
@@ -317,7 +317,7 @@
             .book-cta-title{font-size:clamp(1.6rem,7vw,2.4rem)}
             .book-body{font-size:.86rem}
             .book-actions{gap:10px}
-            .soc-row{gap:8px}
+            .soc-row{gap:8px;flex-wrap:wrap}
             .soc-btn{font-size:.55rem;padding:10px 16px}
             .info-item{padding:20px 0;gap:16px}
             .i-val{font-size:.86rem}
