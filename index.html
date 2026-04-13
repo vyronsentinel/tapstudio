@@ -205,6 +205,38 @@
         .soc-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;padding:11px 20px;border:1px solid var(--bw);color:var(--dim);text-decoration:none;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:7px}
         .soc-btn:hover{border-color:var(--gold);color:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 12px rgba(188,163,143,.1)}
 
+        /* ── BOOKING FORM ── */
+        .book-form{display:flex;flex-direction:column;gap:0}
+        .book-form-title{font-family:var(--serif);font-size:clamp(1.6rem,2.6vw,2.4rem);font-weight:300;line-height:1.15;margin-bottom:6px;color:var(--cream)}
+        .book-form-title em{font-style:italic;color:var(--gold-lt)}
+        .book-form-sub{font-family:var(--mono);font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:28px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+        .form-group.full{grid-column:span 2}
+        .form-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);user-select:none}
+        .form-input,.form-select,.form-textarea{
+            font-family:var(--sans);font-size:.86rem;color:var(--cream);
+            background:var(--bg);border:1px solid var(--bw);padding:13px 16px;
+            outline:none;transition:border-color .3s,box-shadow .3s;
+            -webkit-appearance:none;appearance:none;border-radius:0
+        }
+        .form-input::placeholder,.form-textarea::placeholder{color:rgba(188,163,143,.28);font-weight:300}
+        .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(188,163,143,.08)}
+        .form-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23bca38f' stroke-width='1.2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+        .form-select option{background:var(--bg);color:var(--cream)}
+        .form-textarea{resize:vertical;min-height:80px;line-height:1.6}
+        .form-submit{
+            font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+            padding:16px 36px;background:var(--gold);color:var(--bg);border:none;
+            cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);font-weight:700;
+            margin-top:6px;width:100%;text-align:center
+        }
+        .form-submit:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 8px 28px rgba(188,163,143,.18)}
+        .form-submit:active{transform:translateY(0)}
+        .form-note{font-size:.72rem;color:var(--dim);margin-top:12px;line-height:1.6;text-align:center;font-weight:300}
+        .form-note a{color:var(--gold);text-decoration:none;transition:color .3s}
+        .form-note a:hover{color:var(--gold-lt)}
+
         /* ── FOOTER ── */
         footer{padding:80px 80px 40px;border-top:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px}
         .fb-name{font-family:var(--mono);font-size:1rem;font-weight:700;letter-spacing:.3em;color:var(--cream);margin-bottom:14px}
@@ -319,11 +351,11 @@
 
             /* BOOKING */
             .book-grid{gap:40px}
-            .book-cta-title{font-size:clamp(1.6rem,7vw,2.4rem)}
-            .book-body{font-size:.86rem}
-            .book-actions{gap:10px}
-            .soc-row{gap:8px}
-            .soc-btn{font-size:.55rem;padding:10px 16px}
+            .book-form-title{font-size:clamp(1.6rem,7vw,2.4rem)}
+            .form-row{grid-template-columns:1fr}
+            .form-group.full{grid-column:span 1}
+            .form-submit{padding:14px 24px;font-size:.56rem}
+            .form-note{font-size:.68rem}
             .info-item{padding:20px 0;gap:16px}
             .i-val{font-size:.86rem}
 
@@ -354,7 +386,7 @@
     <a href="#pricing" onclick="closeMobileMenu()">Packages</a>
     <a href="#reviews" onclick="closeMobileMenu()">Reviews</a>
     <a href="#contact" onclick="closeMobileMenu()">Contact</a>
-    <a href="https://www.facebook.com/tapstudio" target="_blank" class="mob-cta" onclick="closeMobileMenu()">Book Session</a>
+    <a href="https://www.facebook.com/tap.studio07" target="_blank" class="mob-cta" onclick="closeMobileMenu()">Book Session</a>
 </div>
 
 <!-- NAV -->
@@ -366,7 +398,7 @@
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="https://www.facebook.com/tapstudio" target="_blank" class="nav-cta"><span>Book Session</span></a>
+    <a href="https://www.facebook.com/tap.studio07" target="_blank" class="nav-cta"><span>Book Session</span></a>
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
         <span></span><span></span><span></span>
     </button>
@@ -451,7 +483,7 @@
             <div class="lbl">Portfolio</div>
             <h2 class="sth">Captured <em>Moments.</em></h2>
         </div>
-        <a href="https://www.facebook.com/tapstudio" target="_blank" class="gal-link">See all photos →</a>
+        <a href="https://www.facebook.com/tap.studio07" target="_blank" class="gal-link">See all photos →</a>
     </div>
     <div class="gal-grid rv">
         <div class="gi"><img src="testing.png" alt="Solo"><div class="gi-ov"><span class="gi-lbl">Solo Portraits</span></div></div>
@@ -488,7 +520,7 @@
             <div class="r-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span style="opacity:.35">★</span></div>
             <div class="r-sub">Average Google Rating</div>
             <p class="r-copy">Real feedback from real clients. TAP Studio is known for its warm staff, stunning photo quality, and very affordable packages.</p>
-            <div class="r-cta"><a href="https://www.facebook.com/tapstudio" target="_blank" class="btn btn-ghost">Leave a Review</a></div>
+            <div class="r-cta"><a href="https://www.facebook.com/tap.studio07" target="_blank" class="btn btn-ghost">Leave a Review</a></div>
         </div>
         <div class="rgrid rv d2">
             <div class="rc"><div class="rc-q">Super bait ng staff and very accommodating. Best talaga sila sa San Pablo!</div><div class="rc-a">Janine Calingasan</div><div class="rc-s"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
@@ -518,21 +550,71 @@
             </div>
         </div>
         <div class="rv d2">
-            <h2 class="book-cta-title">Ready to <em>take<br>your pic?</em></h2>
-            <p class="book-body">Message us on Facebook to check availability and reserve your session. Walk-ins are always welcome when slots are open.</p>
-            <div class="book-actions">
-                <a href="https://www.facebook.com/tapstudio" target="_blank" class="btn btn-gold">Book on Facebook</a>
-                <div class="soc-row">
-                    <a href="https://www.instagram.com/tapstudio07" target="_blank" class="soc-btn">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Instagram
-                    </a>
-                    <a href="https://www.tiktok.com/@tapstudio0" target="_blank" class="soc-btn">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z"/></svg>TikTok
-                    </a>
-                    <a href="https://www.facebook.com/tapstudio" target="_blank" class="soc-btn">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>Facebook
-                    </a>
+            <div class="book-form" id="bookingForm">
+                <h2 class="book-form-title">Book a <em>Session</em></h2>
+                <div class="book-form-sub">Fill in details below</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bookName">Full Name</label>
+                        <input type="text" id="bookName" class="form-input" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bookContact">Contact Number</label>
+                        <input type="tel" id="bookContact" class="form-input" placeholder="09XX XXX XXXX" required>
+                    </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bookDate">Preferred Date</label>
+                        <input type="date" id="bookDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bookTime">Preferred Time</label>
+                        <select id="bookTime" class="form-select" required>
+                            <option value="" disabled selected>Select time</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bookPackage">Package</label>
+                        <select id="bookPackage" class="form-select" required>
+                            <option value="" disabled selected>Select package</option>
+                            <option value="Solo (Self-Shoot) — ₱399">Solo — ₱399</option>
+                            <option value="Duo (Self-Shoot) — ₱549">Duo — ₱549</option>
+                            <option value="Groufies (Self-Shoot) — ₱749">Groufies — ₱749</option>
+                            <option value="Solo Glam — ₱1,049">Solo Glam — ₱1,049</option>
+                            <option value="Duo Couples Glam — ₱1,400">Duo Couples Glam — ₱1,400</option>
+                            <option value="Duo Regular Glam — ₱1,800">Duo Regular Glam — ₱1,800</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bookPersons">No. of Persons</label>
+                        <select id="bookPersons" class="form-select" required>
+                            <option value="" disabled selected>Select</option>
+                            <option value="1">1 Person</option>
+                            <option value="2">2 Persons</option>
+                            <option value="3">3 Persons</option>
+                            <option value="4">4 Persons</option>
+                            <option value="5">5 Persons</option>
+                            <option value="6+">6+ Persons</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="bookMsg">Special Requests / Message</label>
+                    <textarea id="bookMsg" class="form-textarea" placeholder="Any special requests or questions..." rows="3"></textarea>
+                </div>
+                <button type="button" class="form-submit" onclick="submitBooking()">Send Inquiry via Messenger</button>
+                <div class="form-note">Your details will be sent directly to our <a href="https://www.facebook.com/tap.studio07" target="_blank">Facebook page</a> via Messenger.</div>
             </div>
         </div>
     </div>
@@ -543,7 +625,7 @@
     <div>
         <div class="fb-name">TAP<span>·</span>STUDIO</div>
         <p class="fb-body">The first self-shoot studio in San Pablo City, Laguna. Cinematic portraits, real experiences.</p>
-        <a href="https://www.facebook.com/tapstudio" target="_blank" class="btn btn-ghost" style="font-size:.58rem;padding:11px 22px">Book a Session</a>
+        <a href="https://www.facebook.com/tap.studio07" target="_blank" class="btn btn-ghost" style="font-size:.58rem;padding:11px 22px">Book a Session</a>
     </div>
     <div class="fc">
         <div class="fc-h">Navigate</div>
@@ -566,9 +648,9 @@
     <div class="fc">
         <div class="fc-h">Social</div>
         <ul>
-            <li><a href="https://www.facebook.com/tapstudio" target="_blank">Facebook</a></li>
-            <li><a href="https://www.instagram.com/tapstudio07" target="_blank">Instagram</a></li>
-            <li><a href="https://www.tiktok.com/@tapstudio0" target="_blank">TikTok</a></li>
+            <li><a href="https://www.facebook.com/tap.studio07" target="_blank">Facebook</a></li>
+            <li><a href="https://www.instagram.com/tapstudio07?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">Instagram</a></li>
+            <li><a href="https://www.tiktok.com/@tapstudio0?is_from_webapp=1&sender_device=pc" target="_blank">TikTok</a></li>
         </ul>
     </div>
     <div class="f-bot">
@@ -641,7 +723,7 @@ function sw(key,btn){
                     <div class="pc-price"><sup>₱</sup>${c.p}</div>
                     <div class="pc-div"></div>
                     <ul class="pc-feats">${c.f.map(x=>`<li>${x}</li>`).join('')}</ul>
-                    <a href="https://www.facebook.com/tapstudio" target="_blank" class="pc-btn">Select Package</a>
+                    <a href="https://www.facebook.com/tap.studio07" target="_blank" class="pc-btn">Select Package</a>
                 </div>`).join('')}</div>`;
         }
         pb.style.opacity='1';
@@ -655,6 +737,37 @@ const ro=new IntersectionObserver(es=>{
     es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');ro.unobserve(e.target)}})
 },{threshold:.1});
 document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+// Booking Form
+function submitBooking(){
+    const name=document.getElementById('bookName').value.trim();
+    const contact=document.getElementById('bookContact').value.trim();
+    const date=document.getElementById('bookDate').value;
+    const time=document.getElementById('bookTime').value;
+    const pkg=document.getElementById('bookPackage').value;
+    const persons=document.getElementById('bookPersons').value;
+    const msg=document.getElementById('bookMsg').value.trim();
+
+    if(!name||!contact||!date||!time||!pkg||!persons){
+        alert('Please fill in all required fields before submitting.');
+        return;
+    }
+
+    const dateObj=new Date(date+'T00:00:00');
+    const formatted=dateObj.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+    let message='Hi TAP Studio! I would like to book a session.\n\n';
+    message+='Name: '+name+'\n';
+    message+='Contact: '+contact+'\n';
+    message+='Date: '+formatted+'\n';
+    message+='Time: '+time+'\n';
+    message+='Package: '+pkg+'\n';
+    message+='No. of Persons: '+persons+'\n';
+    if(msg){message+='\nMessage: '+msg+'\n';}
+    message+='\nThank you!';
+
+    const encoded=encodeURIComponent(message);
+    window.open('https://m.me/gwapoalmarah?text='+encoded,'_blank');
+}
 </script>
 </body>
 </html>
