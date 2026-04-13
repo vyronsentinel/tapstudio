@@ -337,7 +337,8 @@
             /* GALLERY */
             .gal-head{flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:28px}
             .gal-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
-            .gi:nth-child(n){grid-column:span 1;height:160px}
+            .gi:nth-child(n){grid-column:span 1;grid-row:span 1;height:180px}
+            .gi:nth-child(5){grid-column:span 2}
 
             /* PRICING */
             .price-head{margin-bottom:36px}
@@ -379,7 +380,7 @@
             .sec{padding:56px 16px}
             .agrid{grid-template-columns:1fr}
             .gal-grid{grid-template-columns:1fr}
-            .gi:nth-child(n){height:240px}
+            .gi:nth-child(n){grid-column:span 1;height:240px}
         }
     </style>
 </head>
