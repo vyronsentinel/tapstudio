@@ -271,6 +271,14 @@
         .mobile-menu .mob-cta{margin-top:32px;background:var(--gold);color:var(--bg);border:none!important;font-weight:700;padding:18px 48px;width:auto}
         .mobile-menu .mob-cta:hover{background:var(--gold-lt)}
 
+        /* ── LIGHTBOX ── */
+        .lightbox{position:fixed;inset:0;background:rgba(21,19,17,.95);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;padding:20px}
+        .lightbox.visible{opacity:1;pointer-events:auto}
+        .lightbox img{max-width:100%;max-height:100%;object-fit:contain;transform:scale(.95);transition:transform .3s cubic-bezier(.4,0,.2,1);border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+        .lightbox.visible img{transform:scale(1)}
+        .lb-close{position:absolute;top:20px;right:26px;font-size:2.8rem;color:var(--gold);cursor:pointer;font-family:var(--sans);line-height:1;transition:color .3s}
+        .lb-close:hover{color:var(--cream)}
+
         /* ── RESPONSIVE ── */
         @media(max-width:1100px){
             .hero{grid-template-columns:1fr}
@@ -343,7 +351,7 @@
             .ac{padding:28px 20px}
 
             /* REVIEWS */
-            .r-big{font-size:5.5rem}
+            .r-big{font-size:4rem}
             .rev-layout{gap:40px}
             .rgrid{grid-template-columns:1fr}
             .rc{padding:32px 24px}
@@ -371,7 +379,7 @@
             .sec{padding:56px 16px}
             .agrid{grid-template-columns:1fr}
             .gal-grid{grid-template-columns:1fr}
-            .gi:nth-child(n){grid-column:span 1;height:200px}
+            .gi:nth-child(n){height:240px}
         }
     </style>
 </head>
@@ -550,27 +558,30 @@
             </div>
         </div>
         <div class="rv d2">
-            <div class="book-form" id="bookingForm">
+            <form class="book-form" id="bookingForm" action="https://api.web3forms.com/submit" method="POST" onsubmit="submitWeb3Form(event)">
+                <input type="hidden" name="access_key" value="1d59fbd0-a405-412f-8fd0-b5d13278fdea">
+                <input type="hidden" name="subject" value="New Booking Inquiry from TAP Studio!">
+                <input type="hidden" name="from_name" value="TAP Studio Website">
                 <h2 class="book-form-title">Book a <em>Session</em></h2>
                 <div class="book-form-sub">Fill in details below</div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="bookName">Full Name</label>
-                        <input type="text" id="bookName" class="form-input" placeholder="Your full name" required>
+                        <input type="text" name="Full Name" id="bookName" class="form-input" placeholder="Your full name" pattern="^[a-zA-ZñÑ\s\-\.]+$" title="Please enter a valid name (letters only)" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="bookContact">Contact Number</label>
-                        <input type="tel" id="bookContact" class="form-input" placeholder="09XX XXX XXXX" required>
+                        <input type="tel" name="Contact Number" id="bookContact" class="form-input" placeholder="09XX XXX XXXX" pattern="^09\d{9}$" title="Please enter a valid 11-digit PH mobile number (e.g. 09123456789)" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="bookDate">Preferred Date</label>
-                        <input type="date" id="bookDate" class="form-input" required>
+                        <input type="date" name="Preferred Date" id="bookDate" class="form-input" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="bookTime">Preferred Time</label>
-                        <select id="bookTime" class="form-select" required>
+                        <select name="Preferred Time" id="bookTime" class="form-select" required>
                             <option value="" disabled selected>Select time</option>
                             <option value="10:00 AM">10:00 AM</option>
                             <option value="11:00 AM">11:00 AM</option>
@@ -586,7 +597,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="bookPackage">Package</label>
-                        <select id="bookPackage" class="form-select" required>
+                        <select name="Package" id="bookPackage" class="form-select" required>
                             <option value="" disabled selected>Select package</option>
                             <option value="Solo (Self-Shoot) — ₱399">Solo — ₱399</option>
                             <option value="Duo (Self-Shoot) — ₱549">Duo — ₱549</option>
@@ -598,7 +609,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="bookPersons">No. of Persons</label>
-                        <select id="bookPersons" class="form-select" required>
+                        <select name="No. of Persons" id="bookPersons" class="form-select" required>
                             <option value="" disabled selected>Select</option>
                             <option value="1">1 Person</option>
                             <option value="2">2 Persons</option>
@@ -611,11 +622,11 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="bookMsg">Special Requests / Message</label>
-                    <textarea id="bookMsg" class="form-textarea" placeholder="Any special requests or questions..." rows="3"></textarea>
+                    <textarea name="Message" id="bookMsg" class="form-textarea" placeholder="Any special requests or questions..." rows="3"></textarea>
                 </div>
-                <button type="button" class="form-submit" onclick="submitBooking()">Send Inquiry via Messenger</button>
-                <div class="form-note">Your details will be sent directly to our <a href="https://www.facebook.com/tap.studio07" target="_blank">Facebook page</a> via Messenger.</div>
-            </div>
+                <button type="submit" class="form-submit">Send Inquiry via Email</button>
+                <div class="form-note">Your details will be instantly sent to our studio. We will contact you shortly!</div>
+            </form>
         </div>
     </div>
 </section>
@@ -658,6 +669,12 @@
         <div class="f-tag">San Pablo City, Laguna, Philippines</div>
     </div>
 </footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lb-img" src="" alt="Full Screen">
+    <div class="lb-close">×</div>
+</div>
 
 <script>
 // Mobile Menu
@@ -737,36 +754,71 @@ const ro=new IntersectionObserver(es=>{
     es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');ro.unobserve(e.target)}})
 },{threshold:.1});
 document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
-// Booking Form
-function submitBooking(){
-    const name=document.getElementById('bookName').value.trim();
-    const contact=document.getElementById('bookContact').value.trim();
-    const date=document.getElementById('bookDate').value;
-    const time=document.getElementById('bookTime').value;
-    const pkg=document.getElementById('bookPackage').value;
-    const persons=document.getElementById('bookPersons').value;
-    const msg=document.getElementById('bookMsg').value.trim();
 
-    if(!name||!contact||!date||!time||!pkg||!persons){
-        alert('Please fill in all required fields before submitting.');
-        return;
+// Form Validation Setup
+const dateInput = document.getElementById('bookDate');
+if(dateInput){
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+}
+
+// Lightbox
+document.querySelectorAll('.gi, .fimg').forEach(item => {
+    item.style.cursor = 'zoom-in';
+    item.addEventListener('click', () => {
+        const img = item.querySelector('img');
+        if(img){
+            const lb = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lb-img');
+            lbImg.src = img.src;
+            lb.classList.add('visible');
+        }
+    });
+});
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('visible');
+}
+
+// Web3Forms AJAX Submit
+async function submitWeb3Form(e){
+    e.preventDefault();
+    const form=e.target;
+    const btn=form.querySelector('.form-submit');
+    const note=form.querySelector('.form-note');
+    const origBtnText=btn.innerHTML;
+    const origNoteText=note.innerHTML;
+    
+    btn.innerHTML='Sending...';
+    btn.disabled=true;
+    note.innerHTML='Please wait, sending your inquiry...';
+    
+    try{
+        const formData=new FormData(form);
+        const res=await fetch(form.action,{method:'POST',body:formData});
+        const json=await res.json();
+        if(res.status===200){
+            btn.innerHTML='Inquiry Sent!';
+            note.innerHTML='Success! Your inquiry has been sent to our studio. We will contact you shortly.';
+            note.style.color='#4ade80'; // Green
+            form.reset();
+            setTimeout(()=>{
+                btn.innerHTML=origBtnText;
+                btn.disabled=false;
+                note.innerHTML=origNoteText;
+                note.style.color='var(--dim)';
+            }, 6000);
+        } else {
+            throw new Error(json.message);
+        }
+    } catch(err){
+        btn.innerHTML=origBtnText;
+        btn.disabled=false;
+        note.innerHTML='Uh oh! Something went wrong. Please check your connection and try again.';
+        note.style.color='#ef4444'; // Red
     }
-
-    const dateObj=new Date(date+'T00:00:00');
-    const formatted=dateObj.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-    let message='Hi TAP Studio! I would like to book a session.\n\n';
-    message+='Name: '+name+'\n';
-    message+='Contact: '+contact+'\n';
-    message+='Date: '+formatted+'\n';
-    message+='Time: '+time+'\n';
-    message+='Package: '+pkg+'\n';
-    message+='No. of Persons: '+persons+'\n';
-    if(msg){message+='\nMessage: '+msg+'\n';}
-    message+='\nThank you!';
-
-    const encoded=encodeURIComponent(message);
-    window.open('https://m.me/gwapoalmarah?text='+encoded,'_blank');
 }
 </script>
 </body>
