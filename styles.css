@@ -1229,6 +1229,25 @@ h3 {
     gap: 24px;
   }
 
+  .showcase {
+    background: linear-gradient(180deg, #0d0d0f 0%, #230407 58%, #0d0d0f 100%);
+  }
+
+  .split-page {
+    background: linear-gradient(180deg, #fff7fb 0%, #f59eb8 48%, #f6efe7 100%);
+  }
+
+  .page:not(.is-active) .hero-photo-wrap img,
+  .page:not(.is-active) .page-photo,
+  .page:not(.is-active) .feature-card,
+  .page:not(.is-active) .split-photos img,
+  .page:not(.is-active) .booking-collage img,
+  .page:not(.is-active) .process-steps article {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
   .hero-note {
     position: relative;
     right: auto;
@@ -1242,6 +1261,11 @@ h3 {
     width: 100%;
     min-width: 0;
     grid-auto-rows: minmax(180px, 26vh);
+  }
+
+  .feature-card img {
+    object-fit: cover;
+    background: #140407;
   }
 
   .experience-panel,
@@ -1281,8 +1305,8 @@ h3 {
   }
 
   h2 {
-    font-size: clamp(32px, 10.5vw, 46px);
-    line-height: 1;
+    font-size: clamp(28px, 8vw, 34px);
+    line-height: 1.04;
   }
 
   .page {
@@ -1324,6 +1348,7 @@ h3 {
     display: grid;
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
+    margin-top: 4px;
     gap: 12px;
   }
 
