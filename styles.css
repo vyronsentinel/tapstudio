@@ -1622,6 +1622,33 @@ h3 {
     max-height: calc(100vh - 92px);
   }
 
+  .pricing-modal {
+    width: calc(100vw - 20px);
+    max-height: calc(100svh - 20px);
+  }
+
+  .pricing-shell {
+    padding: 18px;
+  }
+
+  .pricing-modal .modal-close {
+    position: sticky;
+    top: 0;
+    right: auto;
+    z-index: 8;
+    display: flex;
+    width: fit-content;
+    margin-left: auto;
+    margin-bottom: 14px;
+    min-height: 38px;
+    padding-inline: 13px;
+  }
+
+  .pricing-header {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
   .pricing-header,
   .packages,
   .rate-grid,
@@ -1630,8 +1657,28 @@ h3 {
   }
 
   .pricing-header img {
-    width: 78px;
-    height: 78px;
+    width: 66px;
+    height: 66px;
+  }
+
+  .pricing-header h2 {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+
+  .price-card,
+  .rate-grid > div,
+  .reminder-grid > div {
+    padding: 16px;
+  }
+
+  .price-card p,
+  .rate-grid p,
+  .reminder-grid li {
+    font-size: 14px;
+  }
+
+  .pricing-section h3 {
+    font-size: clamp(24px, 8vw, 34px);
   }
 
   .chat-widget {
