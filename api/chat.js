@@ -98,7 +98,7 @@ const getReplies = async (sessionId, after) => {
   return (memoryStore.replies.get(sessionId) || []).filter((reply) => Number(reply.id) > after);
 };
 
-const sendTelegramMessage = async ({ text, replyToMessageId }) => {
+const sendTelegramMessage = async ({ text, replyToMessageId, forceReply = false }) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -116,6 +116,13 @@ const sendTelegramMessage = async ({ text, replyToMessageId }) => {
   if (replyToMessageId) {
     body.reply_to_message_id = replyToMessageId;
     body.allow_sending_without_reply = true;
+  }
+
+  if (forceReply) {
+    body.reply_markup = {
+      force_reply: true,
+      input_field_placeholder: "Reply to this visitor...",
+    };
   }
 
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -184,7 +191,7 @@ const handleSend = async (request, response) => {
   ].join("\n");
 
   try {
-    const sent = await sendTelegramMessage({ text });
+    const sent = await sendTelegramMessage({ text, forceReply: true });
     await setMessageSession(sent.message_id, sessionId);
     return sendJson(response, 200, { ok: true, messageId: sent.message_id });
   } catch (error) {
