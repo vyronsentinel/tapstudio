@@ -186,7 +186,7 @@ const handleSend = async (request, response) => {
   try {
     const sent = await sendTelegramMessage({ text });
     await setMessageSession(sent.message_id, sessionId);
-    return sendJson(response, 200, { ok: true });
+    return sendJson(response, 200, { ok: true, messageId: sent.message_id });
   } catch (error) {
     return sendJson(response, 502, { error: error.message || "Message failed" });
   }
