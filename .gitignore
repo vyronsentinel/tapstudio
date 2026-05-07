@@ -1,3 +1,5 @@
 assets/incoming/
 assets/incoming-contact-sheet.jpg
 .env*
+
+.vercel
