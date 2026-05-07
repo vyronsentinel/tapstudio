@@ -299,12 +299,15 @@
         <div class="chat-header">
           <div>
             <strong>TAP Studio</strong>
-            <span>Send an inquiry</span>
+            <span>Usually replies in Telegram</span>
           </div>
           <button class="chat-close" type="button" aria-label="Close inquiry chat" data-chat-close>Close</button>
         </div>
 
         <form class="chat-form" data-chat-form>
+          <div class="chat-log" data-chat-log aria-live="polite">
+            <p class="chat-bubble staff">Hi! Send us your name, contact, and question. We will reply here as soon as we can.</p>
+          </div>
           <label>
             Name
             <input name="name" autocomplete="name" required>
@@ -317,7 +320,7 @@
             Message
             <textarea name="message" rows="4" placeholder="Ask about packages, schedule, or availability" required></textarea>
           </label>
-          <button class="button primary" type="submit">Send inquiry</button>
+          <button class="button primary" type="submit">Send message</button>
           <p class="chat-status" data-chat-status role="status" aria-live="polite"></p>
         </form>
       </div>

@@ -11,8 +11,12 @@ const chatToggle = document.querySelector("[data-chat-toggle]");
 const chatPanel = document.querySelector("#inquiryChat");
 const chatClose = document.querySelector("[data-chat-close]");
 const chatForm = document.querySelector("[data-chat-form]");
+const chatLog = document.querySelector("[data-chat-log]");
 const chatStatus = document.querySelector("[data-chat-status]");
+const chatStorageKey = "tapStudioChatSession";
+const chatRepliesKey = "tapStudioChatLastReply";
 let isSnapping = false;
+let chatPollTimer;
 
 const playPageTransition = () => {
   document.body.classList.remove("is-page-changing");
@@ -188,6 +192,13 @@ const setChatOpen = (isOpen) => {
   if (chatPanel) {
     chatPanel.hidden = !isOpen;
   }
+
+  if (isOpen) {
+    loadChatReplies();
+    startChatPolling();
+  } else {
+    stopChatPolling();
+  }
 };
 
 chatToggle?.addEventListener("click", () => {
@@ -195,6 +206,60 @@ chatToggle?.addEventListener("click", () => {
 });
 
 chatClose?.addEventListener("click", () => setChatOpen(false));
+
+const getChatSessionId = () => {
+  const existing = window.localStorage.getItem(chatStorageKey);
+
+  if (existing) return existing;
+
+  const generated =
+    window.crypto?.randomUUID?.() ||
+    `chat_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+
+  window.localStorage.setItem(chatStorageKey, generated);
+  return generated;
+};
+
+const appendChatBubble = (text, type = "visitor") => {
+  if (!chatLog) return;
+
+  const bubble = document.createElement("p");
+  bubble.className = `chat-bubble ${type}`;
+  bubble.textContent = text;
+  chatLog.append(bubble);
+  chatLog.scrollTop = chatLog.scrollHeight;
+};
+
+const loadChatReplies = async () => {
+  if (!chatLog) return;
+
+  const sessionId = getChatSessionId();
+  const after = Number(window.localStorage.getItem(chatRepliesKey) || 0);
+
+  try {
+    const response = await fetch(`/api/chat?mode=updates&sessionId=${encodeURIComponent(sessionId)}&after=${after}`);
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    data.replies?.forEach((reply) => {
+      appendChatBubble(reply.text, "staff");
+      window.localStorage.setItem(chatRepliesKey, String(reply.id));
+    });
+  } catch {
+    // Polling is best-effort; the submit state shows actionable errors.
+  }
+};
+
+const startChatPolling = () => {
+  window.clearInterval(chatPollTimer);
+  chatPollTimer = window.setInterval(loadChatReplies, 3500);
+};
+
+const stopChatPolling = () => {
+  window.clearInterval(chatPollTimer);
+};
 
 chatForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -204,6 +269,7 @@ chatForm?.addEventListener("submit", async (event) => {
   const submitButton = chatForm.querySelector('button[type="submit"]');
   const formData = new FormData(chatForm);
   const payload = {
+    sessionId: getChatSessionId(),
     name: formData.get("name"),
     contact: formData.get("contact"),
     message: formData.get("message"),
@@ -211,9 +277,10 @@ chatForm?.addEventListener("submit", async (event) => {
 
   chatStatus.textContent = "Sending...";
   submitButton.disabled = true;
+  appendChatBubble(payload.message, "visitor");
 
   try {
-    const response = await fetch("/api/send-inquiry", {
+    const response = await fetch("/api/chat?mode=send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -226,8 +293,9 @@ chatForm?.addEventListener("submit", async (event) => {
       throw new Error(data.error || "Message failed");
     }
 
-    chatForm.reset();
-    chatStatus.textContent = "Inquiry sent. TAP Studio will reply soon.";
+    chatForm.elements.message.value = "";
+    chatStatus.textContent = "Sent. Keep this chat open for replies.";
+    startChatPolling();
   } catch (error) {
     chatStatus.textContent = error.message || "Message failed. Please try again.";
   } finally {

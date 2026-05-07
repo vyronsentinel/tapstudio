@@ -1226,6 +1226,36 @@ h3 {
   padding: 16px 18px 18px;
 }
 
+.chat-log {
+  display: grid;
+  max-height: 190px;
+  overflow-y: auto;
+  gap: 8px;
+  padding: 2px 2px 4px;
+}
+
+.chat-bubble {
+  width: fit-content;
+  max-width: 88%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.chat-bubble.visitor {
+  justify-self: end;
+  background: var(--white);
+}
+
+.chat-bubble.staff {
+  justify-self: start;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+}
+
 .chat-form label {
   display: grid;
   gap: 7px;
