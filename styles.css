@@ -581,6 +581,10 @@ h3 {
   margin-top: 34px;
 }
 
+.booking-actions {
+  align-items: center;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -601,6 +605,12 @@ h3 {
   width: 52px;
   padding: 0;
   flex: 0 0 52px;
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .social-link svg {
@@ -1393,13 +1403,21 @@ h3 {
     width: 100%;
   }
 
-  .booking-actions .button,
+  .booking-actions > .button,
   .hero-actions .button {
     flex: 1 1 100%;
   }
 
+  .social-links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
   .booking-actions .social-link {
     flex: 1 1 0;
+    width: auto;
     min-width: 0;
   }
 
