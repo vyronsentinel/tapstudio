@@ -15,6 +15,7 @@ const chatLog = document.querySelector("[data-chat-log]");
 const chatStatus = document.querySelector("[data-chat-status]");
 const chatStorageKey = "tapStudioChatSession";
 const chatRepliesKey = "tapStudioChatLastReply";
+const chatMessageIdsKey = "tapStudioTelegramMessageIds";
 let isSnapping = false;
 let chatPollTimer;
 
@@ -230,14 +231,39 @@ const appendChatBubble = (text, type = "visitor") => {
   chatLog.scrollTop = chatLog.scrollHeight;
 };
 
+const getChatMessageIds = () => {
+  try {
+    return JSON.parse(window.localStorage.getItem(chatMessageIdsKey) || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const rememberChatMessageId = (messageId) => {
+  if (!messageId) return;
+
+  const ids = getChatMessageIds();
+  const nextIds = [...new Set([...ids, Number(messageId)])].slice(-20);
+  window.localStorage.setItem(chatMessageIdsKey, JSON.stringify(nextIds));
+};
+
 const loadChatReplies = async () => {
   if (!chatLog) return;
 
   const sessionId = getChatSessionId();
   const after = Number(window.localStorage.getItem(chatRepliesKey) || 0);
+  const messageIds = getChatMessageIds();
+
+  if (!messageIds.length) return;
 
   try {
-    const response = await fetch(`/api/chat?mode=updates&sessionId=${encodeURIComponent(sessionId)}&after=${after}`);
+    const params = new URLSearchParams({
+      mode: "updates",
+      sessionId,
+      after: String(after),
+      messageIds: messageIds.join(","),
+    });
+    const response = await fetch(`/api/chat?${params}`);
 
     if (!response.ok) return;
 
@@ -288,11 +314,13 @@ chatForm?.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload),
     });
 
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
       throw new Error(data.error || "Message failed");
     }
 
+    rememberChatMessageId(data.messageId);
     chatForm.elements.message.value = "";
     chatStatus.textContent = "Sent. Keep this chat open for replies.";
     startChatPolling();

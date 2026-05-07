@@ -203,12 +203,43 @@ const handleUpdates = async (request, response) => {
   const url = new URL(request.url, `https://${request.headers.host || "localhost"}`);
   const sessionId = clean(url.searchParams.get("sessionId")).replace(/[^a-zA-Z0-9_-]/g, "");
   const after = Number(url.searchParams.get("after") || 0);
+  const messageIds = clean(url.searchParams.get("messageIds"))
+    .split(",")
+    .map((value) => Number(value))
+    .filter((value) => Number.isInteger(value));
 
   if (!sessionId) {
     return sendJson(response, 400, { error: "Missing chat session" });
   }
 
   try {
+    if (messageIds.length) {
+      const token = process.env.TELEGRAM_BOT_TOKEN;
+
+      if (!token) {
+        return sendJson(response, 500, { error: "Telegram is not configured" });
+      }
+
+      const telegramResponse = await fetch(`https://api.telegram.org/bot${token}/getUpdates?allowed_updates=%5B%22message%22%5D`);
+      const data = await telegramResponse.json().catch(() => ({}));
+
+      if (!telegramResponse.ok || !data.ok) {
+        return sendJson(response, 502, { error: data.description || "Could not load Telegram replies" });
+      }
+
+      const replies = (data.result || [])
+        .filter((update) => Number(update.update_id) > after)
+        .filter((update) => messageIds.includes(Number(update.message?.reply_to_message?.message_id)))
+        .map((update) => ({
+          id: update.update_id,
+          text: clamp(update.message?.text, 1200),
+          at: Number(update.message?.date || 0) * 1000 || Date.now(),
+        }))
+        .filter((reply) => reply.text);
+
+      return sendJson(response, 200, { replies });
+    }
+
     const replies = await getReplies(sessionId, Number.isFinite(after) ? after : 0);
     return sendJson(response, 200, { replies });
   } catch (error) {
