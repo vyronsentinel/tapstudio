@@ -287,6 +287,42 @@
       </div>
     </dialog>
 
+    <section class="chat-widget" aria-label="TAP Studio inquiry chat">
+      <button class="chat-toggle" type="button" aria-expanded="false" aria-controls="inquiryChat" data-chat-toggle>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5.8C4 4.2 5.2 3 6.8 3h10.4C18.8 3 20 4.2 20 5.8v7.4c0 1.6-1.2 2.8-2.8 2.8h-4.5l-4.4 4.1V16H6.8C5.2 16 4 14.8 4 13.2V5.8Zm2.8-.2c-.2 0-.4.2-.4.4v7c0 .2.2.4.4.4h3.9v1.3l1.5-1.3h5c.2 0 .4-.2.4-.4V6c0-.2-.2-.4-.4-.4H6.8Z"></path>
+        </svg>
+        <span>Inquire</span>
+      </button>
+
+      <div class="chat-panel" id="inquiryChat" hidden>
+        <div class="chat-header">
+          <div>
+            <strong>TAP Studio</strong>
+            <span>Send an inquiry</span>
+          </div>
+          <button class="chat-close" type="button" aria-label="Close inquiry chat" data-chat-close>Close</button>
+        </div>
+
+        <form class="chat-form" data-chat-form>
+          <label>
+            Name
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>
+            Contact
+            <input name="contact" autocomplete="tel" placeholder="Phone, email, or Messenger" required>
+          </label>
+          <label>
+            Message
+            <textarea name="message" rows="4" placeholder="Ask about packages, schedule, or availability" required></textarea>
+          </label>
+          <button class="button primary" type="submit">Send inquiry</button>
+          <p class="chat-status" data-chat-status role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
     <script src="script.js"></script>
   </body>
 </html>

@@ -6,6 +6,12 @@ const photoModalImage = photoModal?.querySelector("img");
 const photoModalCaption = photoModal?.querySelector("p");
 const pricingModal = document.querySelector("#pricingModal");
 const pages = Array.from(document.querySelectorAll(".page"));
+const chatWidget = document.querySelector(".chat-widget");
+const chatToggle = document.querySelector("[data-chat-toggle]");
+const chatPanel = document.querySelector("#inquiryChat");
+const chatClose = document.querySelector("[data-chat-close]");
+const chatForm = document.querySelector("[data-chat-form]");
+const chatStatus = document.querySelector("[data-chat-status]");
 let isSnapping = false;
 
 const playPageTransition = () => {
@@ -173,4 +179,58 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     playPageTransition();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+});
+
+const setChatOpen = (isOpen) => {
+  chatWidget?.classList.toggle("is-open", isOpen);
+  chatToggle?.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+  if (chatPanel) {
+    chatPanel.hidden = !isOpen;
+  }
+};
+
+chatToggle?.addEventListener("click", () => {
+  setChatOpen(!chatWidget?.classList.contains("is-open"));
+});
+
+chatClose?.addEventListener("click", () => setChatOpen(false));
+
+chatForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!chatStatus) return;
+
+  const submitButton = chatForm.querySelector('button[type="submit"]');
+  const formData = new FormData(chatForm);
+  const payload = {
+    name: formData.get("name"),
+    contact: formData.get("contact"),
+    message: formData.get("message"),
+  };
+
+  chatStatus.textContent = "Sending...";
+  submitButton.disabled = true;
+
+  try {
+    const response = await fetch("/api/send-inquiry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Message failed");
+    }
+
+    chatForm.reset();
+    chatStatus.textContent = "Inquiry sent. TAP Studio will reply soon.";
+  } catch (error) {
+    chatStatus.textContent = error.message || "Message failed. Please try again.";
+  } finally {
+    submitButton.disabled = false;
+  }
 });
