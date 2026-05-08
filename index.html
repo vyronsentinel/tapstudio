@@ -54,6 +54,20 @@
   </head>
   <body>
     <div class="transition-layer" aria-hidden="true"></div>
+    <div class="magic-layer" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
     <header class="site-header" aria-label="Primary navigation">
       <a class="brand" href="#home" aria-label="TAP Studio home">
         <span class="brand-mark">
@@ -443,5 +457,126 @@
     </section>
 
     <script src="script.js"></script>
+    <script>
+    /* ============================================================
+       TAP Studio — Enhanced Animation Layer
+       ============================================================ */
+
+    (function () {
+      'use strict';
+
+      /* ------ Scroll progress bar ------ */
+      const progressEl = document.createElement('div');
+      progressEl.className = 'tap-progress';
+      document.body.prepend(progressEl);
+
+      const snapPages = document.querySelector('.snap-pages');
+      if (snapPages) {
+        snapPages.addEventListener('scroll', () => {
+          const { scrollTop, scrollHeight, clientHeight } = snapPages;
+          const pct = scrollHeight === clientHeight ? 0 : (scrollTop / (scrollHeight - clientHeight)) * 100;
+          progressEl.style.width = pct + '%';
+        }, { passive: true });
+      }
+
+      /* ------ Word-wrap splitter for h1 and h2 ------ */
+      function wrapWords(el) {
+        if (!el || el.dataset.wordWrapped) return;
+        el.dataset.wordWrapped = '1';
+        const text = el.textContent.trim();
+        const words = text.split(/\s+/);
+        el.innerHTML = words.map(w =>
+          `<span class="word-wrap"><span class="word-inner">${w}</span></span>`
+        ).join(' ');
+      }
+
+      /* Run on every page that becomes active */
+      function processPage(page) {
+        page.querySelectorAll('h1, h2').forEach(wrapWords);
+      }
+
+      // Observe page activation
+      const pageObserver = new MutationObserver(mutations => {
+        mutations.forEach(m => {
+          if (m.type === 'attributes' && m.attributeName === 'class') {
+            const page = m.target;
+            if (page.classList.contains('is-active')) {
+              processPage(page);
+            }
+          }
+        });
+      });
+
+      document.querySelectorAll('.page').forEach(p => {
+        pageObserver.observe(p, { attributes: true });
+        // Also process if already active on load
+        if (p.classList.contains('is-active')) processPage(p);
+      });
+
+      // Also process initially visible headings
+      setTimeout(() => {
+        document.querySelectorAll('.page.is-active h1, .page.is-active h2').forEach(wrapWords);
+      }, 80);
+
+      /* ------ Eyebrow line-draw: ensure .eyebrow is inside .reveal or .page.is-active ------ */
+      // The CSS handles this; JS just ensures the class propagation is right.
+
+      /* ------ Parallax tilt on feature cards ------ */
+      document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width  - 0.5;
+          const y = (e.clientY - r.top)  / r.height - 0.5;
+          card.style.transform = `perspective(600px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg) scale(1.02)`;
+        }, { passive: true });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+
+      /* ------ Tilt for package cards ------ */
+      document.querySelectorAll('.package-cards article').forEach(card => {
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width  - 0.5;
+          const y = (e.clientY - r.top)  / r.height - 0.5;
+          card.style.transform = `perspective(500px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg)`;
+        }, { passive: true });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+
+      /* ------ Session list number counter (01→ count up) ------ */
+      function animateNumber(el, target, duration) {
+        const start = performance.now();
+        function step(now) {
+          const t = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          el.textContent = String(Math.round(ease * target)).padStart(2, '0');
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      const sessionPage = document.getElementById('sessions');
+      if (sessionPage) {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              sessionPage.querySelectorAll('.session-list article span').forEach((span, i) => {
+                setTimeout(() => animateNumber(span, i + 1, 600), i * 160 + 280);
+              });
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.4 });
+        observer.observe(sessionPage);
+      }
+
+    })();
+    </script>
   </body>
 </html>

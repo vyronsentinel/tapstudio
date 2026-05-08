@@ -9,6 +9,7 @@
   --violet: #8b79e9;
   --green: #0f5c4d;
   --gold: #d7b56d;
+  --spark: #fff4bf;
   --shadow: 0 30px 90px rgba(10, 8, 12, 0.28);
 }
 
@@ -47,6 +48,56 @@ body {
 body.is-page-changing .transition-layer {
   animation: pageCurtain 820ms cubic-bezier(0.76, 0, 0.24, 1);
 }
+
+.magic-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+
+.magic-layer span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) rotate(45deg) scale(0.4);
+  animation: sparkleDrift 8s linear infinite;
+}
+
+.magic-layer span::before,
+.magic-layer span::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 244, 191, 0.95), transparent);
+  transform: translate(-50%, -50%);
+}
+
+.magic-layer span::before {
+  width: 26px;
+  height: 2px;
+}
+
+.magic-layer span::after {
+  width: 2px;
+  height: 26px;
+}
+
+.magic-layer span:nth-child(1) { left: 7%; top: 18%; animation-delay: -1.2s; }
+.magic-layer span:nth-child(2) { left: 18%; top: 74%; animation-delay: -4.4s; animation-duration: 9.5s; }
+.magic-layer span:nth-child(3) { left: 28%; top: 38%; animation-delay: -7s; }
+.magic-layer span:nth-child(4) { left: 42%; top: 16%; animation-delay: -2.7s; animation-duration: 10s; }
+.magic-layer span:nth-child(5) { left: 52%; top: 66%; animation-delay: -5.2s; }
+.magic-layer span:nth-child(6) { left: 63%; top: 26%; animation-delay: -8.1s; animation-duration: 9s; }
+.magic-layer span:nth-child(7) { left: 72%; top: 82%; animation-delay: -3.6s; }
+.magic-layer span:nth-child(8) { left: 84%; top: 42%; animation-delay: -6.5s; animation-duration: 11s; }
+.magic-layer span:nth-child(9) { left: 92%; top: 18%; animation-delay: -9.2s; }
+.magic-layer span:nth-child(10) { left: 12%; top: 48%; animation-delay: -10.4s; animation-duration: 10.5s; }
+.magic-layer span:nth-child(11) { left: 36%; top: 86%; animation-delay: -11.3s; }
+.magic-layer span:nth-child(12) { left: 78%; top: 10%; animation-delay: -12.6s; animation-duration: 9.8s; }
 
 a {
   color: inherit;
@@ -198,7 +249,9 @@ button {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  background:
+    linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.16), transparent),
+    repeating-linear-gradient(110deg, transparent 0 64px, rgba(255, 244, 191, 0.16) 65px 67px, transparent 68px 132px);
   opacity: 0;
   transform: translateX(-120%);
 }
@@ -373,6 +426,64 @@ button {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes sparkleDrift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 34px, 0) rotate(45deg) scale(0.35);
+  }
+
+  12% {
+    opacity: 0.85;
+  }
+
+  34% {
+    opacity: 0.25;
+    transform: translate3d(18px, -32px, 0) rotate(135deg) scale(1);
+  }
+
+  56% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-18px, -118px, 0) rotate(225deg) scale(0.42);
+  }
+}
+
+@keyframes buttonGleam {
+  0% {
+    opacity: 0;
+    transform: translateX(0) skewX(-18deg);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(430%) skewX(-18deg);
+  }
+}
+
+@keyframes cardGleam {
+  0%,
+  64% {
+    opacity: 0;
+    transform: translateX(-45%) rotate(6deg);
+  }
+
+  74% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(72%) rotate(6deg);
   }
 }
 
@@ -594,6 +705,7 @@ h3 {
 }
 
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -603,10 +715,26 @@ h3 {
   border-radius: 999px;
   font-size: 14px;
   font-weight: 850;
+  overflow: hidden;
 }
 
 .button:hover {
   transform: translateY(-2px);
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  inset: -60% auto -60% -45%;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgba(255, 244, 191, 0.74), transparent);
+  opacity: 0;
+  transform: skewX(-18deg);
+}
+
+.button:hover::before,
+.button:focus-visible::before {
+  animation: buttonGleam 780ms ease;
 }
 
 .social-link {
@@ -694,6 +822,42 @@ h3 {
   background: var(--ink);
   isolation: isolate;
   cursor: zoom-in;
+}
+
+.feature-card::before,
+.package-cards article::before,
+.visit-photo::before,
+.booking-collage img {
+  backface-visibility: hidden;
+}
+
+.feature-card::before,
+.package-cards article::before,
+.visit-photo::before {
+  content: "";
+  position: absolute;
+  inset: -35% -60%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 244, 191, 0.55), transparent 62%);
+  opacity: 0;
+  transform: translateX(-45%) rotate(6deg);
+}
+
+.page.is-active .feature-card::before,
+.page.is-active .package-cards article::before,
+.page.is-active .visit-photo::before {
+  animation: cardGleam 4.8s ease-in-out infinite;
+}
+
+.page.is-active .feature-card:nth-child(2)::before,
+.page.is-active .package-cards article:nth-child(2)::before {
+  animation-delay: 1s;
+}
+
+.page.is-active .feature-card:nth-child(3)::before,
+.page.is-active .package-cards article:nth-child(3)::before {
+  animation-delay: 2s;
 }
 
 .feature-card.large {
@@ -905,6 +1069,7 @@ h3 {
 }
 
 .package-cards article {
+  position: relative;
   display: flex;
   min-height: 250px;
   flex-direction: column;
@@ -958,6 +1123,7 @@ h3 {
 }
 
 .visit-photo {
+  position: relative;
   width: 100%;
   height: min(66vh, 620px);
   overflow: hidden;
@@ -2120,6 +2286,8 @@ h3 {
   .page:not(.is-active) .page-photo,
   .page:not(.is-active) .feature-card,
   .page:not(.is-active) .split-photos img,
+  .page:not(.is-active) .package-cards article,
+  .page:not(.is-active) .visit-photo,
   .page:not(.is-active) .booking-collage img,
   .page:not(.is-active) .process-steps article {
     opacity: 1;
@@ -2129,5 +2297,419 @@ h3 {
 
   .page::after {
     display: none;
+  }
+
+  .magic-layer,
+  .feature-card::before,
+  .package-cards article::before,
+  .visit-photo::before,
+  .button::before {
+    display: none;
+  }
+}
+
+/* ============================================================
+   ENHANCED ANIMATION SYSTEM — TAP Studio
+   Layered motion design cohesive with the red/gold/dark palette
+   ============================================================ */
+
+/* ---------- Scroll progress bar ---------- */
+.tap-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
+  background-size: 200% 100%;
+  animation: progressShimmer 2.4s linear infinite;
+  transition: width 120ms linear;
+  pointer-events: none;
+}
+
+@keyframes progressShimmer {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+
+
+/* ---------- Hero section — pulse aura on photo ---------- */
+.hero-photo-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 72% 50%, rgba(184, 0, 16, 0.36), transparent 52%);
+  animation: heroAuraPulse 4.2s ease-in-out infinite;
+}
+
+@keyframes heroAuraPulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 0.92; transform: scale(1.06); }
+}
+
+/* ---------- Eyebrow line-draw underline ---------- */
+.eyebrow {
+  position: relative;
+  display: inline-block;
+}
+
+.eyebrow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 1.5px;
+  background: currentColor;
+  transition: width 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .eyebrow::after,
+.reveal.is-visible .eyebrow::after {
+  width: 100%;
+}
+
+/* ---------- Staggered word-reveal for h1 / h2 ---------- */
+.word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.word-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition:
+    transform 760ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 480ms ease;
+}
+
+.page.is-active .word-inner,
+.reveal.is-visible .word-inner {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Staggered delay for each word */
+.word-wrap:nth-child(1)  .word-inner { transition-delay: 60ms; }
+.word-wrap:nth-child(2)  .word-inner { transition-delay: 130ms; }
+.word-wrap:nth-child(3)  .word-inner { transition-delay: 200ms; }
+.word-wrap:nth-child(4)  .word-inner { transition-delay: 270ms; }
+.word-wrap:nth-child(5)  .word-inner { transition-delay: 340ms; }
+.word-wrap:nth-child(6)  .word-inner { transition-delay: 410ms; }
+.word-wrap:nth-child(7)  .word-inner { transition-delay: 480ms; }
+.word-wrap:nth-child(8)  .word-inner { transition-delay: 550ms; }
+.word-wrap:nth-child(9)  .word-inner { transition-delay: 620ms; }
+.word-wrap:nth-child(10) .word-inner { transition-delay: 690ms; }
+
+/* ---------- Session list — staggered reveal ---------- */
+.session-list article {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition:
+    opacity 560ms ease,
+    transform 560ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .session-list article:nth-child(1) { opacity: 1; transform: none; transition-delay: 280ms; }
+.page.is-active .session-list article:nth-child(2) { opacity: 1; transform: none; transition-delay: 420ms; }
+.page.is-active .session-list article:nth-child(3) { opacity: 1; transform: none; transition-delay: 560ms; }
+
+/* Session list hover accent line */
+.session-list article {
+  position: relative;
+}
+
+.session-list article::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--red);
+  opacity: 0.7;
+  transition: width 280ms ease;
+}
+
+.session-list article:hover::before {
+  width: 3px;
+}
+
+.session-list article:hover {
+  background: rgba(184, 0, 16, 0.03);
+}
+
+/* ---------- Process steps — pop-up stagger ---------- */
+.process-steps article {
+  position: relative;
+  overflow: hidden;
+}
+
+.process-steps article::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(184, 0, 16, 0.12), transparent);
+  opacity: 0;
+  transition: opacity 340ms ease;
+}
+
+.process-steps article:hover::after {
+  opacity: 1;
+}
+
+.process-steps article {
+  transition:
+    opacity 640ms ease,
+    transform 640ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 640ms ease;
+}
+
+/* ---------- Package cards — number highlight on hover ---------- */
+.package-cards strong {
+  transition: color 280ms ease, letter-spacing 280ms ease;
+}
+
+.package-cards article:hover strong {
+  color: var(--red);
+  letter-spacing: -0.01em;
+}
+
+/* Package card entrance — scale up from below */
+.package-cards article {
+  transform-origin: bottom center;
+}
+
+/* ---------- Visit details — slide-in rows ---------- */
+.visit-details article {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 480ms ease,
+    transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .visit-details article:nth-child(1) { opacity: 1; transform: none; transition-delay: 300ms; }
+.page.is-active .visit-details article:nth-child(2) { opacity: 1; transform: none; transition-delay: 440ms; }
+.page.is-active .visit-details article:nth-child(3) { opacity: 1; transform: none; transition-delay: 580ms; }
+
+.visit-details article {
+  transition: background 240ms ease, padding-left 240ms ease;
+}
+
+.visit-details article:hover {
+  background: rgba(255, 255, 255, 1);
+  padding-left: calc(clamp(18px, 2.6vw, 26px) + 6px);
+}
+
+/* Restore the transition (override the hover-only above with combined) */
+.visit-details article {
+  transition:
+    opacity 480ms ease,
+    transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 240ms ease,
+    padding-left 240ms ease;
+}
+
+/* ---------- Hero CTA buttons — entrance stagger ---------- */
+.hero-actions .button {
+  opacity: 0;
+  transform: translateY(22px) scale(0.96);
+  transition:
+    opacity 540ms ease,
+    transform 540ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .hero-actions .button:nth-child(1) {
+  opacity: 1; transform: none; transition-delay: 520ms;
+}
+
+.page.is-active .hero-actions .button:nth-child(2) {
+  opacity: 1; transform: none; transition-delay: 660ms;
+}
+
+/* ---------- Hero note — fade-slide from right ---------- */
+.hero-note {
+  opacity: 0;
+  transform: translateX(28px);
+  transition:
+    opacity 640ms ease,
+    transform 640ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .hero-note,
+.reveal.is-visible.hero-note {
+  opacity: 1;
+  transform: none;
+  transition-delay: 780ms;
+}
+
+/* ---------- Booking collage — hover depth parallax ---------- */
+.booking-collage img {
+  transition:
+    opacity 820ms ease,
+    transform 980ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 820ms ease;
+}
+
+.booking-collage:hover img:nth-child(1) { transform: scale(1.03) translateY(-4px); }
+.booking-collage:hover img:nth-child(2) { transform: scale(1.04) translateY(-6px); transition-delay: 40ms; }
+.booking-collage:hover img:nth-child(3) { transform: scale(1.03) translateY(-5px); transition-delay: 80ms; }
+.booking-collage:hover img:nth-child(4) { transform: scale(1.04) translateY(-7px); transition-delay: 120ms; }
+
+/* ---------- Booking actions — entrance ---------- */
+.booking-actions .button {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 500ms ease,
+    transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.page.is-active .booking-actions .button:nth-child(1) { opacity: 1; transform: none; transition-delay: 460ms; }
+.page.is-active .booking-actions .button:nth-child(2) { opacity: 1; transform: none; transition-delay: 580ms; }
+.page.is-active .booking-actions .button:nth-child(3) { opacity: 1; transform: none; transition-delay: 700ms; }
+.page.is-active .booking-actions .button:nth-child(4) { opacity: 1; transform: none; transition-delay: 820ms; }
+
+/* ---------- Chat toggle — heartbeat attention pulse ---------- */
+@keyframes chatPulse {
+  0%, 100% { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), 0 0 0 0 rgba(184, 0, 16, 0); }
+  50%       { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), 0 0 0 10px rgba(184, 0, 16, 0); }
+  40%       { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), 0 0 0 6px rgba(184, 0, 16, 0.25); }
+}
+
+.chat-toggle {
+  animation: chatPulse 3.6s ease-in-out infinite;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.chat-toggle:hover {
+  transform: translateY(-3px) scale(1.04);
+  animation-play-state: paused;
+}
+
+/* ---------- Chat panel slide-up entrance ---------- */
+.chat-panel {
+  transform-origin: bottom right;
+  transform: scale(0.92) translateY(14px);
+  opacity: 0;
+  transition:
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 300ms ease;
+  pointer-events: none;
+}
+
+.chat-panel:not([hidden]) {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ---------- Nav links hover — colour glide ---------- */
+.nav-links a,
+.nav-button {
+  position: relative;
+  transition: color 220ms ease, transform 180ms ease;
+}
+
+.nav-links a::after,
+.nav-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 1.5px;
+  background: var(--gold);
+  transition: width 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav-links a:hover::after,
+.nav-button:hover::after {
+  width: 100%;
+}
+
+/* ---------- Brand mark — rotate on hover ---------- */
+.brand-mark {
+  transition: transform 460ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 280ms ease;
+}
+
+.brand:hover .brand-mark {
+  transform: rotate(8deg) scale(1.08);
+  box-shadow: 0 0 0 3px rgba(215, 181, 109, 0.45);
+}
+
+/* ---------- Scroll dots — ripple on activation ---------- */
+.scroll-dots button {
+  transition: height 280ms ease, background 280ms ease, transform 280ms ease, box-shadow 280ms ease;
+}
+
+.scroll-dots button.is-active {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- Feature card — label slide up on hover ---------- */
+.feature-card div {
+  transition: transform 340ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.feature-card:hover div {
+  transform: translateY(-6px);
+}
+
+/* ---------- Price card hover lift ---------- */
+.price-card {
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 280ms ease;
+}
+
+.price-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 28px 64px rgba(13, 13, 15, 0.18);
+}
+
+/* ---------- Social link wiggle ---------- */
+@keyframes socialWiggle {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-8deg); }
+  40%  { transform: rotate(8deg); }
+  60%  { transform: rotate(-4deg); }
+  80%  { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.social-link:hover svg {
+  animation: socialWiggle 480ms ease;
+}
+
+/* ---------- Reduced motion overrides ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tap-progress,
+  .hero-photo-wrap::after,
+  .eyebrow::after,
+  .word-wrap,
+  .word-inner,
+  .chat-toggle,
+  .brand-mark {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .hero-note,
+  .hero-actions .button,
+  .booking-actions .button,
+  .visit-details article,
+  .session-list article,
+  .chat-panel {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
