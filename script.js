@@ -16,6 +16,7 @@ const chatSession = document.querySelector("[data-chat-session]");
 const endChatButton = document.querySelector("[data-end-chat]");
 const chatLog = document.querySelector("[data-chat-log]");
 const chatStatus = document.querySelector("[data-chat-status]");
+const chatUnread = document.querySelector("[data-chat-unread]");
 const chatStorageKey = "tapStudioChatSession";
 const chatRepliesKey = "tapStudioChatLastReply";
 const chatMessageIdsKey = "tapStudioTelegramMessageIds";
@@ -23,6 +24,7 @@ const chatVisitorKey = "tapStudioChatVisitor";
 let isSnapping = false;
 let chatPollTimer;
 let chatAudioContext;
+let chatUnreadCount = 0;
 const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
 const chatStaffName = "TAP Studio";
 const chatStaffLogo = "assets/tapstudiologo.png";
@@ -203,7 +205,11 @@ const setChatOpen = (isOpen) => {
   }
 
   if (isOpen) {
+    setChatUnread(0);
+    unlockChatAudio();
     loadChatReplies();
+    startChatPolling();
+  } else if (getChatMessageIds().length) {
     startChatPolling();
   } else {
     stopChatPolling();
@@ -211,6 +217,7 @@ const setChatOpen = (isOpen) => {
 };
 
 chatToggle?.addEventListener("click", () => {
+  unlockChatAudio();
   setChatOpen(!chatWidget?.classList.contains("is-open"));
 });
 
@@ -257,6 +264,21 @@ const getChatSessionId = () => {
   return generated;
 };
 
+const formatChatTime = (date = new Date()) =>
+  date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+const setChatUnread = (count) => {
+  chatUnreadCount = Math.max(0, count);
+
+  if (!chatUnread) return;
+
+  chatUnread.hidden = chatUnreadCount === 0;
+  chatUnread.textContent = chatUnreadCount > 9 ? "9+" : String(chatUnreadCount);
+};
+
 const appendChatBubble = (text, type = "visitor") => {
   if (!chatLog) return;
 
@@ -285,8 +307,23 @@ const appendChatBubble = (text, type = "visitor") => {
     bubble.textContent = text;
   }
 
+  const meta = document.createElement("span");
+  meta.className = "chat-meta";
+  meta.textContent = formatChatTime();
+  bubble.append(meta);
+
   chatLog.append(bubble);
   chatLog.scrollTop = chatLog.scrollHeight;
+  return bubble;
+};
+
+const setChatBubbleStatus = (bubble, status = "") => {
+  const meta = bubble?.querySelector(".chat-meta");
+
+  if (!meta) return;
+
+  meta.textContent = status ? `${formatChatTime()} · ${status}` : formatChatTime();
+  bubble.classList.toggle("is-failed", status === "Not sent");
 };
 
 const getChatMessageIds = () => {
@@ -305,27 +342,46 @@ const rememberChatMessageId = (messageId) => {
   window.localStorage.setItem(chatMessageIdsKey, JSON.stringify(nextIds));
 };
 
+const getChatAudioContext = () => {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContext) return null;
+
+  chatAudioContext = chatAudioContext || new AudioContext();
+  return chatAudioContext;
+};
+
+const unlockChatAudio = () => {
+  try {
+    const audioContext = getChatAudioContext();
+
+    if (audioContext?.state === "suspended") {
+      audioContext.resume();
+    }
+  } catch {
+    // Browsers can block audio until they are ready to allow it.
+  }
+};
+
 const playChatNotification = () => {
   try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = getChatAudioContext();
 
-    if (!AudioContext) return;
+    if (!audioContext) return;
 
-    chatAudioContext = chatAudioContext || new AudioContext();
-
-    if (chatAudioContext.state === "suspended") {
-      chatAudioContext.resume();
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
     }
 
-    const now = chatAudioContext.currentTime;
-    const gain = chatAudioContext.createGain();
+    const now = audioContext.currentTime;
+    const gain = audioContext.createGain();
     gain.gain.setValueAtTime(0.0001, now);
     gain.gain.exponentialRampToValueAtTime(0.14, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
-    gain.connect(chatAudioContext.destination);
+    gain.connect(audioContext.destination);
 
     [740, 980].forEach((frequency, index) => {
-      const oscillator = chatAudioContext.createOscillator();
+      const oscillator = audioContext.createOscillator();
       oscillator.type = "sine";
       oscillator.frequency.setValueAtTime(frequency, now + index * 0.11);
       oscillator.connect(gain);
@@ -359,6 +415,7 @@ const loadChatReplies = async () => {
 
     const data = await response.json();
     const replies = data.replies || [];
+    const isChatOpen = Boolean(chatWidget?.classList.contains("is-open"));
 
     replies.forEach((reply) => {
       appendChatBubble(reply.text, "staff");
@@ -370,6 +427,10 @@ const loadChatReplies = async () => {
 
       if (chatStatus) {
         chatStatus.textContent = "New reply from TAP Studio.";
+      }
+
+      if (!isChatOpen) {
+        setChatUnread(chatUnreadCount + replies.length);
       }
     }
   } catch {
@@ -430,6 +491,7 @@ const endChat = async () => {
   window.localStorage.removeItem(chatMessageIdsKey);
   window.localStorage.removeItem(chatVisitorKey);
   chatForm?.reset();
+  setChatUnread(0);
   resetChatLog();
   setChatSessionView(false);
 
@@ -442,16 +504,41 @@ const endChat = async () => {
   }
 };
 
-setChatSessionView(getChatMessageIds().length > 0);
+const hasActiveChatSession = getChatMessageIds().length > 0;
+setChatSessionView(hasActiveChatSession);
+resetChatLog();
+
+if (hasActiveChatSession) {
+  startChatPolling();
+}
 
 endChatButton?.addEventListener("click", endChat);
+
+chatPanel?.addEventListener("pointerdown", unlockChatAudio);
+chatPanel?.addEventListener("focusin", unlockChatAudio);
+
+const getActiveChatSubmitButton = () => {
+  if (!chatSession?.hidden) {
+    return chatSession.querySelector('button[type="submit"]');
+  }
+
+  return chatCompose?.querySelector('button[type="submit"]') || chatForm?.querySelector('button[type="submit"]');
+};
 
 chatForm?.querySelectorAll("textarea").forEach((textarea) => {
   textarea.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || event.shiftKey) return;
 
     event.preventDefault();
-    chatForm.requestSubmit();
+    const submitButton = getActiveChatSubmitButton();
+
+    if (submitButton?.disabled) return;
+
+    if (submitButton) {
+      chatForm.requestSubmit(submitButton);
+    } else {
+      chatForm.requestSubmit();
+    }
   });
 });
 
@@ -460,7 +547,12 @@ chatForm?.addEventListener("submit", async (event) => {
 
   if (!chatStatus) return;
 
-  const submitButton = event.submitter || chatForm.querySelector('button[type="submit"]');
+  unlockChatAudio();
+
+  const submitButton = event.submitter || getActiveChatSubmitButton();
+
+  if (submitButton?.disabled) return;
+
   const formData = new FormData(chatForm);
   const visitor = getChatVisitor();
   const isSessionActive = !chatSession?.hidden;
@@ -472,8 +564,11 @@ chatForm?.addEventListener("submit", async (event) => {
   };
 
   chatStatus.textContent = "Sending...";
-  submitButton.disabled = true;
-  appendChatBubble(payload.message, "visitor");
+  if (submitButton) {
+    submitButton.disabled = true;
+  }
+  const visitorBubble = appendChatBubble(payload.message, "visitor");
+  setChatBubbleStatus(visitorBubble, "Sending");
 
   try {
     const response = await fetch("/api/chat?mode=send", {
@@ -494,12 +589,16 @@ chatForm?.addEventListener("submit", async (event) => {
     rememberChatVisitor(payload);
     chatForm.elements.message.value = "";
     chatForm.elements.sessionMessage.value = "";
+    setChatBubbleStatus(visitorBubble);
     setChatSessionView(true);
     chatStatus.textContent = "";
     startChatPolling();
   } catch (error) {
+    setChatBubbleStatus(visitorBubble, "Not sent");
     chatStatus.textContent = error.message || "Message failed. Please try again.";
   } finally {
-    submitButton.disabled = false;
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
   }
 });
