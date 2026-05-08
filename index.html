@@ -8,7 +8,49 @@
       name="description"
       content="TAP Studio is a professional photography studio in San Pablo City for glam, graduation, barkada, family, duo, and themed studio portraits."
     >
-    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#b80010">
+    <meta property="og:type" content="business.business">
+    <meta property="og:title" content="TAP Studio | Take a Pic">
+    <meta
+      property="og:description"
+      content="Book studio portraits, glam shoots, graduation photos, barkada sessions, duo portraits, and family photos at TAP Studio in San Pablo City."
+    >
+    <meta property="og:image" content="assets/glam-red-full.jpg">
+    <meta property="og:locale" content="en_PH">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TAP Studio | Take a Pic">
+    <meta
+      name="twitter:description"
+      content="Professional studio portraits in San Pablo City for glam, graduation, barkada, family, duo, and personal milestone sessions."
+    >
+    <meta name="twitter:image" content="assets/glam-red-full.jpg">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "PhotoStudio",
+        "name": "TAP Studio",
+        "description": "Professional photography studio in San Pablo City for glam, graduation, barkada, family, duo, and themed portraits.",
+        "image": "assets/glam-red-full.jpg",
+        "logo": "assets/tapstudiologo.png",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Lauro Dizon St",
+          "addressLocality": "San Pablo City",
+          "addressRegion": "Laguna",
+          "postalCode": "4000",
+          "addressCountry": "PH"
+        },
+        "areaServed": "San Pablo City, Laguna",
+        "openingHours": "By appointment",
+        "priceRange": "PHP 449-799",
+        "sameAs": [
+          "https://www.facebook.com/tapstudio07",
+          "https://www.instagram.com/tapstudio07/",
+          "https://www.tiktok.com/@tapstudio0"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div class="transition-layer" aria-hidden="true"></div>
@@ -22,7 +64,9 @@
       <nav class="nav-links" aria-label="Site sections">
         <a href="#work">Work</a>
         <a href="#sessions">Sessions</a>
+        <a href="#packages">Packages</a>
         <a href="#experience">Experience</a>
+        <a href="#visit">Visit</a>
         <button class="nav-button" type="button" data-open-pricing>Pricing</button>
         <a href="#booking">Book</a>
       </nav>
@@ -142,6 +186,63 @@
         </div>
       </section>
 
+      <section class="page package-page" id="packages" aria-labelledby="packages-title">
+        <div class="package-copy reveal">
+          <p class="eyebrow">Packages</p>
+          <h2 id="packages-title">Clear session rates before you message.</h2>
+          <p>
+            Pick the package that fits your shoot. Every main package includes unlimited
+            self-shoot time, soft copies through Google Drive, printed 4R copies, and one backdrop.
+          </p>
+          <button class="button primary" type="button" data-open-pricing>See add-ons and reminders</button>
+        </div>
+        <div class="package-cards reveal" aria-label="TAP Studio package rates">
+          <article>
+            <span>Solo</span>
+            <strong>₱449.00</strong>
+            <p>20 minutes, 1 pax, 1 printed 4R copy, all soft copies.</p>
+          </article>
+          <article>
+            <span>Duo</span>
+            <strong>₱599.00</strong>
+            <p>25 minutes, 2 pax, 2 printed 4R copies, all soft copies.</p>
+          </article>
+          <article>
+            <span>Groupies</span>
+            <strong>₱799.00</strong>
+            <p>30 minutes, up to 5 pax, 3 printed 4R copies, all soft copies.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="page visit-page" id="visit" aria-labelledby="visit-title">
+        <div class="visit-photo reveal">
+          <img src="assets/family-portrait.jpg" alt="Family portrait sample by TAP Studio">
+        </div>
+        <div class="visit-copy reveal">
+          <p class="eyebrow">Visit</p>
+          <h2 id="visit-title">Find the studio and plan your shoot day.</h2>
+          <div class="visit-details">
+            <article>
+              <span>Address</span>
+              <p>Lauro Dizon St, San Pablo City, 4000 Laguna.</p>
+            </article>
+            <article>
+              <span>Studio hours</span>
+              <p>By appointment. Message ahead to confirm your preferred date, time, backdrop, and package.</p>
+            </article>
+            <article>
+              <span>Before arrival</span>
+              <p>Bring outfit options, arrive prepared for your scheduled time, and allow extra time for hair and make-up bookings.</p>
+            </article>
+          </div>
+          <div class="visit-actions">
+            <a class="button primary" href="https://www.google.com/maps/search/?api=1&query=TAP%20Studio%2038FF%2BJJM%20San%20Pablo%20City%20Laguna" target="_blank" rel="noopener noreferrer">Open map</a>
+            <a class="button secondary" href="#booking">Book now</a>
+          </div>
+        </div>
+      </section>
+
       <section class="page booking" id="booking" aria-labelledby="booking-title">
         <div class="booking-collage reveal" aria-label="TAP Studio photo collage">
           <img src="assets/fam.jpg" alt="Family studio portrait">
@@ -153,8 +254,7 @@
           <p class="eyebrow">Book TAP Studio</p>
           <h2 id="booking-title">Ready for photos that feel like you?</h2>
           <p>
-            Visit TAP Studio at Catapang apartment, L. Dizon street,
-            San Pablo City, Philippines, 4000.
+            Visit TAP Studio at Lauro Dizon St, San Pablo City, 4000 Laguna.
           </p>
           <div class="booking-actions">
             <button class="button secondary" type="button" data-open-pricing>View pricing</button>

@@ -211,6 +211,8 @@ button {
 .page .page-photo,
 .page .feature-card,
 .page .split-photos img,
+.page .package-cards article,
+.page .visit-photo,
 .page .booking-collage img,
 .page .process-steps article {
   transition:
@@ -223,6 +225,8 @@ button {
 .page:not(.is-active) .page-photo,
 .page:not(.is-active) .feature-card,
 .page:not(.is-active) .split-photos img,
+.page:not(.is-active) .package-cards article,
+.page:not(.is-active) .visit-photo,
 .page:not(.is-active) .booking-collage img,
 .page:not(.is-active) .process-steps article {
   opacity: 0.34;
@@ -232,6 +236,7 @@ button {
 
 .page.is-active .feature-card:nth-child(2),
 .page.is-active .split-photos img:nth-child(2),
+.page.is-active .package-cards article:nth-child(2),
 .page.is-active .booking-collage img:nth-child(2),
 .page.is-active .process-steps article:nth-child(2) {
   transition-delay: 90ms;
@@ -239,6 +244,7 @@ button {
 
 .page.is-active .feature-card:nth-child(3),
 .page.is-active .split-photos img:nth-child(3),
+.page.is-active .package-cards article:nth-child(3),
 .page.is-active .booking-collage img:nth-child(3),
 .page.is-active .process-steps article:nth-child(3) {
   transition-delay: 170ms;
@@ -260,6 +266,8 @@ button {
 
 .page.is-active .feature-card,
 .page.is-active .split-photos img,
+.page.is-active .package-cards article,
+.page.is-active .visit-photo,
 .page.is-active .booking-collage img,
 .page.is-active .process-steps article {
   animation: photoSettle 1050ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -845,6 +853,159 @@ h3 {
 
 .process-steps p {
   color: rgba(255, 255, 255, 0.72);
+}
+
+.package-page {
+  grid-template-columns: minmax(320px, 0.68fr) minmax(640px, 1fr);
+  gap: clamp(32px, 5vw, 76px);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.36) 38%, rgba(255, 255, 255, 0) 58%),
+    linear-gradient(135deg, #fff8f9 0%, #f5adc2 48%, #2a090e 100%);
+  color: var(--ink);
+}
+
+.package-copy,
+.package-cards,
+.visit-copy,
+.visit-photo {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.package-copy .eyebrow,
+.visit-copy .eyebrow {
+  color: var(--red);
+}
+
+.package-copy p:not(.eyebrow),
+.visit-copy > p {
+  max-width: 600px;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: clamp(16px, 1.35vw, 20px);
+  line-height: 1.55;
+}
+
+.package-copy .button {
+  margin-top: 30px;
+  border-color: rgba(13, 13, 15, 0.12);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.package-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  align-items: stretch;
+  overflow: hidden;
+  background: rgba(13, 13, 15, 0.12);
+  box-shadow: var(--shadow);
+}
+
+.package-cards article {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: clamp(22px, 2.4vw, 34px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 241, 244, 0.92)),
+    var(--white);
+}
+
+.package-cards article:nth-child(2) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 214, 221, 0.96)),
+    var(--white);
+}
+
+.package-cards span,
+.visit-details span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.package-cards strong {
+  display: block;
+  margin-bottom: 14px;
+  max-width: 100%;
+  font-size: clamp(30px, 3vw, 44px);
+  line-height: 0.92;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.package-cards p {
+  color: rgba(13, 13, 15, 0.7);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.visit-page {
+  grid-template-columns: minmax(360px, 0.82fr) minmax(360px, 0.9fr);
+  gap: clamp(34px, 6vw, 86px);
+  background:
+    linear-gradient(135deg, #0d0d0f 0 38%, #f8d6dd 38% 70%, #fffaf7 70% 100%);
+  color: var(--ink);
+}
+
+.visit-photo {
+  width: 100%;
+  height: min(66vh, 620px);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.visit-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 28%;
+}
+
+.visit-details {
+  display: grid;
+  gap: 1px;
+  margin-top: 30px;
+  background: rgba(13, 13, 15, 0.14);
+}
+
+.visit-details article {
+  padding: clamp(18px, 2.6vw, 26px);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.visit-details p {
+  color: rgba(13, 13, 15, 0.72);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.visit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.visit-actions .primary {
+  background: var(--ink);
+  color: var(--white);
+  border-color: rgba(13, 13, 15, 0.12);
+}
+
+.visit-actions .secondary {
+  border-color: rgba(13, 13, 15, 0.12);
+  background: var(--white);
+  color: var(--ink);
 }
 
 .booking {
@@ -1556,6 +1717,14 @@ h3 {
     gap: clamp(24px, 4vw, 54px);
   }
 
+  .package-cards article {
+    min-height: 230px;
+  }
+
+  .visit-photo {
+    height: min(60vh, 520px);
+  }
+
   .booking-collage {
     grid-template-rows: repeat(2, minmax(138px, 25vh));
     gap: 10px;
@@ -1597,6 +1766,8 @@ h3 {
 
   .showcase,
   .split-page,
+  .package-page,
+  .visit-page,
   .booking {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -1610,10 +1781,20 @@ h3 {
     background: linear-gradient(180deg, #fff7fb 0%, #f59eb8 48%, #f6efe7 100%);
   }
 
+  .package-page {
+    background: linear-gradient(180deg, #fff8f9 0%, #f3a1b8 58%, #2a090e 100%);
+  }
+
+  .visit-page {
+    background: linear-gradient(180deg, #fffaf7 0%, #f8d6dd 58%, #0d0d0f 100%);
+  }
+
   .page:not(.is-active) .hero-photo-wrap img,
   .page:not(.is-active) .page-photo,
   .page:not(.is-active) .feature-card,
   .page:not(.is-active) .split-photos img,
+  .page:not(.is-active) .package-cards article,
+  .page:not(.is-active) .visit-photo,
   .page:not(.is-active) .booking-collage img,
   .page:not(.is-active) .process-steps article {
     opacity: 1;
@@ -1630,10 +1811,26 @@ h3 {
 
   .showcase-grid,
   .split-photos,
+  .package-cards,
   .booking-collage {
     width: 100%;
     min-width: 0;
     grid-auto-rows: minmax(180px, 26vh);
+  }
+
+  .package-cards {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+
+  .package-cards article,
+  .package-cards article:nth-child(2) {
+    min-height: 0;
+    transform: none;
+  }
+
+  .visit-photo {
+    height: min(54vh, 480px);
   }
 
   .feature-card img {
@@ -1644,7 +1841,9 @@ h3 {
   .experience-panel,
   .booking-copy,
   .session-copy,
-  .showcase-copy {
+  .showcase-copy,
+  .package-copy,
+  .visit-copy {
     width: 100%;
   }
 
@@ -1749,13 +1948,15 @@ h3 {
   }
 
   .booking-actions,
-  .hero-actions {
+  .hero-actions,
+  .visit-actions {
     align-items: stretch;
     width: 100%;
   }
 
   .booking-actions > .button,
-  .hero-actions .button {
+  .hero-actions .button,
+  .visit-actions .button {
     flex: 1 1 100%;
   }
 
