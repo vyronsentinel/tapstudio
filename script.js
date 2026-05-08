@@ -19,6 +19,7 @@ const chatStatus = document.querySelector("[data-chat-status]");
 const chatStorageKey = "tapStudioChatSession";
 const chatRepliesKey = "tapStudioChatLastReply";
 const chatMessageIdsKey = "tapStudioTelegramMessageIds";
+const chatVisitorKey = "tapStudioChatVisitor";
 let isSnapping = false;
 let chatPollTimer;
 const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
@@ -215,11 +216,29 @@ chatClose?.addEventListener("click", () => setChatOpen(false));
 const setChatSessionView = (isSessionActive) => {
   if (chatCompose) {
     chatCompose.hidden = isSessionActive;
+    chatCompose.querySelectorAll("input, textarea, button").forEach((field) => {
+      field.disabled = isSessionActive;
+    });
   }
 
   if (chatSession) {
     chatSession.hidden = !isSessionActive;
+    chatSession.querySelectorAll("input, textarea, button").forEach((field) => {
+      field.disabled = !isSessionActive;
+    });
   }
+};
+
+const getChatVisitor = () => {
+  try {
+    return JSON.parse(window.localStorage.getItem(chatVisitorKey) || "{}");
+  } catch {
+    return {};
+  }
+};
+
+const rememberChatVisitor = ({ name, contact }) => {
+  window.localStorage.setItem(chatVisitorKey, JSON.stringify({ name, contact }));
 };
 
 const getChatSessionId = () => {
@@ -313,6 +332,7 @@ const endChat = () => {
   window.localStorage.removeItem(chatStorageKey);
   window.localStorage.removeItem(chatRepliesKey);
   window.localStorage.removeItem(chatMessageIdsKey);
+  window.localStorage.removeItem(chatVisitorKey);
   chatForm?.reset();
   resetChatLog();
   setChatSessionView(false);
@@ -331,13 +351,15 @@ chatForm?.addEventListener("submit", async (event) => {
 
   if (!chatStatus) return;
 
-  const submitButton = chatForm.querySelector('button[type="submit"]');
+  const submitButton = event.submitter || chatForm.querySelector('button[type="submit"]');
   const formData = new FormData(chatForm);
+  const visitor = getChatVisitor();
+  const isSessionActive = !chatSession?.hidden;
   const payload = {
     sessionId: getChatSessionId(),
-    name: formData.get("name"),
-    contact: formData.get("contact"),
-    message: formData.get("message"),
+    name: isSessionActive ? visitor.name || "Website visitor" : formData.get("name"),
+    contact: isSessionActive ? visitor.contact || "Live chat session" : formData.get("contact"),
+    message: isSessionActive ? formData.get("sessionMessage") : formData.get("message"),
   };
 
   chatStatus.textContent = "Sending...";
@@ -360,7 +382,9 @@ chatForm?.addEventListener("submit", async (event) => {
     }
 
     rememberChatMessageId(data.messageId);
+    rememberChatVisitor(payload);
     chatForm.elements.message.value = "";
+    chatForm.elements.sessionMessage.value = "";
     setChatSessionView(true);
     chatStatus.textContent = "";
     startChatPolling();

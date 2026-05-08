@@ -327,6 +327,11 @@
           </div>
           <div class="chat-session" data-chat-session hidden>
             <p>Message sent. TAP Studio will reply here soon.</p>
+            <label>
+              Message
+              <textarea name="sessionMessage" rows="3" placeholder="Continue the conversation" required></textarea>
+            </label>
+            <button class="button primary" type="submit" data-session-send>Send message</button>
             <button class="button secondary" type="button" data-end-chat>End chat</button>
           </div>
           <p class="chat-status" data-chat-status role="status" aria-live="polite"></p>
