@@ -446,6 +446,15 @@ setChatSessionView(getChatMessageIds().length > 0);
 
 endChatButton?.addEventListener("click", endChat);
 
+chatForm?.querySelectorAll("textarea").forEach((textarea) => {
+  textarea.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || event.shiftKey) return;
+
+    event.preventDefault();
+    chatForm.requestSubmit();
+  });
+});
+
 chatForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
