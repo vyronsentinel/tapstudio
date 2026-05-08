@@ -1417,10 +1417,19 @@ h3 {
   min-height: 28px;
   margin-inline: auto;
   padding: 0 12px;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: transparent;
   color: rgba(255, 255, 255, 0.58);
   font-size: 11px;
+}
+
+.chat-end:hover,
+.chat-end:focus-visible {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  outline: none;
 }
 
 .chat-send:disabled,
