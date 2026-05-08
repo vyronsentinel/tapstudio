@@ -23,6 +23,8 @@ const chatVisitorKey = "tapStudioChatVisitor";
 let isSnapping = false;
 let chatPollTimer;
 const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
+const chatStaffName = "TAP Studio";
+const chatStaffLogo = "assets/tapstudiologo.png";
 
 const playPageTransition = () => {
   document.body.classList.remove("is-page-changing");
@@ -259,7 +261,29 @@ const appendChatBubble = (text, type = "visitor") => {
 
   const bubble = document.createElement("p");
   bubble.className = `chat-bubble ${type}`;
-  bubble.textContent = text;
+
+  if (type === "staff") {
+    const identity = document.createElement("span");
+    identity.className = "chat-staff";
+
+    const logo = document.createElement("img");
+    logo.src = chatStaffLogo;
+    logo.alt = "";
+    logo.loading = "lazy";
+
+    const name = document.createElement("span");
+    name.textContent = chatStaffName;
+
+    const message = document.createElement("span");
+    message.className = "chat-message";
+    message.textContent = text;
+
+    identity.append(logo, name);
+    bubble.append(identity, message);
+  } else {
+    bubble.textContent = text;
+  }
+
   chatLog.append(bubble);
   chatLog.scrollTop = chatLog.scrollHeight;
 };
