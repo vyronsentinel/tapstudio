@@ -22,6 +22,7 @@ const chatMessageIdsKey = "tapStudioTelegramMessageIds";
 const chatVisitorKey = "tapStudioChatVisitor";
 let isSnapping = false;
 let chatPollTimer;
+let chatAudioContext;
 const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
 const chatStaffName = "TAP Studio";
 const chatStaffLogo = "assets/tapstudiologo.png";
@@ -304,6 +305,38 @@ const rememberChatMessageId = (messageId) => {
   window.localStorage.setItem(chatMessageIdsKey, JSON.stringify(nextIds));
 };
 
+const playChatNotification = () => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    chatAudioContext = chatAudioContext || new AudioContext();
+
+    if (chatAudioContext.state === "suspended") {
+      chatAudioContext.resume();
+    }
+
+    const now = chatAudioContext.currentTime;
+    const gain = chatAudioContext.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.14, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+    gain.connect(chatAudioContext.destination);
+
+    [740, 980].forEach((frequency, index) => {
+      const oscillator = chatAudioContext.createOscillator();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, now + index * 0.11);
+      oscillator.connect(gain);
+      oscillator.start(now + index * 0.11);
+      oscillator.stop(now + index * 0.11 + 0.18);
+    });
+  } catch {
+    // Sound notifications are a nice-to-have and can be blocked by browser policy.
+  }
+};
+
 const loadChatReplies = async () => {
   if (!chatLog) return;
 
@@ -325,11 +358,20 @@ const loadChatReplies = async () => {
     if (!response.ok) return;
 
     const data = await response.json();
+    const replies = data.replies || [];
 
-    data.replies?.forEach((reply) => {
+    replies.forEach((reply) => {
       appendChatBubble(reply.text, "staff");
       window.localStorage.setItem(chatRepliesKey, String(reply.id));
     });
+
+    if (replies.length) {
+      playChatNotification();
+
+      if (chatStatus) {
+        chatStatus.textContent = "New reply from TAP Studio.";
+      }
+    }
   } catch {
     // Polling is best-effort; the submit state shows actionable errors.
   }
