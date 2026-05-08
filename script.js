@@ -327,8 +327,38 @@ const resetChatLog = () => {
   appendChatBubble(chatIntroMessage, "staff");
 };
 
-const endChat = () => {
+const endChat = async () => {
+  const sessionId = window.localStorage.getItem(chatStorageKey);
+  const visitor = getChatVisitor();
+
   stopChatPolling();
+
+  if (chatStatus) {
+    chatStatus.textContent = "Ending chat...";
+  }
+
+  if (endChatButton) {
+    endChatButton.disabled = true;
+  }
+
+  try {
+    if (sessionId) {
+      await fetch("/api/chat?mode=end", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          name: visitor.name,
+          contact: visitor.contact,
+        }),
+      });
+    }
+  } catch {
+    // The visitor should still be able to end the local chat if the notice fails.
+  }
+
   window.localStorage.removeItem(chatStorageKey);
   window.localStorage.removeItem(chatRepliesKey);
   window.localStorage.removeItem(chatMessageIdsKey);
@@ -339,6 +369,10 @@ const endChat = () => {
 
   if (chatStatus) {
     chatStatus.textContent = "Chat ended.";
+  }
+
+  if (endChatButton) {
+    endChatButton.disabled = false;
   }
 };
 

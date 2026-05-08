@@ -247,6 +247,46 @@ const handleUpdates = async (request, response) => {
   }
 };
 
+const handleEnd = async (request, response) => {
+  if (request.method !== "POST") {
+    response.setHeader("Allow", "POST");
+    return sendJson(response, 405, { error: "Method not allowed" });
+  }
+
+  let body;
+
+  try {
+    body = parseBody(request);
+  } catch {
+    return sendJson(response, 400, { error: "Invalid request body" });
+  }
+
+  const sessionId = clamp(body.sessionId, 80).replace(/[^a-zA-Z0-9_-]/g, "");
+  const name = clamp(body.name, 80) || "Website visitor";
+  const contact = clamp(body.contact, 120) || "Live chat session";
+
+  if (!sessionId) {
+    return sendJson(response, 400, { error: "Missing chat session" });
+  }
+
+  const text = [
+    "<b>TAP Studio live chat ended</b>",
+    "",
+    `<b>Session:</b> <code>${escapeHtml(sessionId)}</code>`,
+    `<b>Name:</b> ${escapeHtml(name)}`,
+    `<b>Contact:</b> ${escapeHtml(contact)}`,
+    "",
+    "The visitor ended the chat on the website.",
+  ].join("\n");
+
+  try {
+    await sendTelegramMessage({ text });
+    return sendJson(response, 200, { ok: true });
+  } catch (error) {
+    return sendJson(response, 502, { error: error.message || "End chat notice failed" });
+  }
+};
+
 const handleTelegram = async (request, response) => {
   if (request.method !== "POST") {
     return sendJson(response, 200, { ok: true });
@@ -284,6 +324,7 @@ module.exports = async (request, response) => {
 
   if (mode === "send") return handleSend(request, response);
   if (mode === "updates") return handleUpdates(request, response);
+  if (mode === "end") return handleEnd(request, response);
   if (mode === "telegram") return handleTelegram(request, response);
 
   return sendJson(response, 404, { error: "Unknown chat action" });
