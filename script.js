@@ -11,6 +11,9 @@ const chatToggle = document.querySelector("[data-chat-toggle]");
 const chatPanel = document.querySelector("#inquiryChat");
 const chatClose = document.querySelector("[data-chat-close]");
 const chatForm = document.querySelector("[data-chat-form]");
+const chatCompose = document.querySelector("[data-chat-compose]");
+const chatSession = document.querySelector("[data-chat-session]");
+const endChatButton = document.querySelector("[data-end-chat]");
 const chatLog = document.querySelector("[data-chat-log]");
 const chatStatus = document.querySelector("[data-chat-status]");
 const chatStorageKey = "tapStudioChatSession";
@@ -18,6 +21,7 @@ const chatRepliesKey = "tapStudioChatLastReply";
 const chatMessageIdsKey = "tapStudioTelegramMessageIds";
 let isSnapping = false;
 let chatPollTimer;
+const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
 
 const playPageTransition = () => {
   document.body.classList.remove("is-page-changing");
@@ -208,6 +212,16 @@ chatToggle?.addEventListener("click", () => {
 
 chatClose?.addEventListener("click", () => setChatOpen(false));
 
+const setChatSessionView = (isSessionActive) => {
+  if (chatCompose) {
+    chatCompose.hidden = isSessionActive;
+  }
+
+  if (chatSession) {
+    chatSession.hidden = !isSessionActive;
+  }
+};
+
 const getChatSessionId = () => {
   const existing = window.localStorage.getItem(chatStorageKey);
 
@@ -287,6 +301,31 @@ const stopChatPolling = () => {
   window.clearInterval(chatPollTimer);
 };
 
+const resetChatLog = () => {
+  if (!chatLog) return;
+
+  chatLog.textContent = "";
+  appendChatBubble(chatIntroMessage, "staff");
+};
+
+const endChat = () => {
+  stopChatPolling();
+  window.localStorage.removeItem(chatStorageKey);
+  window.localStorage.removeItem(chatRepliesKey);
+  window.localStorage.removeItem(chatMessageIdsKey);
+  chatForm?.reset();
+  resetChatLog();
+  setChatSessionView(false);
+
+  if (chatStatus) {
+    chatStatus.textContent = "Chat ended.";
+  }
+};
+
+setChatSessionView(getChatMessageIds().length > 0);
+
+endChatButton?.addEventListener("click", endChat);
+
 chatForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -322,7 +361,8 @@ chatForm?.addEventListener("submit", async (event) => {
 
     rememberChatMessageId(data.messageId);
     chatForm.elements.message.value = "";
-    chatStatus.textContent = "Sent. Keep this chat open for replies.";
+    setChatSessionView(true);
+    chatStatus.textContent = "";
     startChatPolling();
   } catch (error) {
     chatStatus.textContent = error.message || "Message failed. Please try again.";

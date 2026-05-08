@@ -308,21 +308,27 @@
           <div class="chat-log" data-chat-log aria-live="polite">
             <p class="chat-bubble staff">Hi! Send your question here and TAP Studio will reply in this chat.</p>
           </div>
-          <div class="chat-fields">
+          <div class="chat-compose" data-chat-compose>
+            <div class="chat-fields">
+              <label>
+                Name
+                <input name="name" autocomplete="name" required>
+              </label>
+              <label>
+                Contact
+                <input name="contact" autocomplete="tel" placeholder="Phone or Messenger" required>
+              </label>
+            </div>
             <label>
-              Name
-              <input name="name" autocomplete="name" required>
+              Message
+              <textarea name="message" rows="3" placeholder="Ask about packages, schedule, or availability" required></textarea>
             </label>
-            <label>
-              Contact
-              <input name="contact" autocomplete="tel" placeholder="Phone or Messenger" required>
-            </label>
+            <button class="button primary" type="submit">Send message</button>
           </div>
-          <label>
-            Message
-            <textarea name="message" rows="3" placeholder="Ask about packages, schedule, or availability" required></textarea>
-          </label>
-          <button class="button primary" type="submit">Send message</button>
+          <div class="chat-session" data-chat-session hidden>
+            <p>Message sent. TAP Studio will reply here soon.</p>
+            <button class="button secondary" type="button" data-end-chat>End chat</button>
+          </div>
           <p class="chat-status" data-chat-status role="status" aria-live="polite"></p>
         </form>
       </div>
