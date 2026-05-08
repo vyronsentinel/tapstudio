@@ -326,13 +326,15 @@
             <button class="button primary" type="submit">Send message</button>
           </div>
           <div class="chat-session" data-chat-session hidden>
-            <p>Message sent. TAP Studio will reply here soon.</p>
-            <label>
-              Message
-              <textarea name="sessionMessage" rows="3" placeholder="Continue the conversation" required></textarea>
-            </label>
-            <button class="button primary" type="submit" data-session-send>Send message</button>
-            <button class="button secondary" type="button" data-end-chat>End chat</button>
+            <p class="chat-session-note">TAP Studio will reply here soon.</p>
+            <div class="chat-input-row">
+              <label class="chat-session-message">
+                <span>Message</span>
+                <textarea name="sessionMessage" rows="1" placeholder="Message TAP Studio" required></textarea>
+              </label>
+              <button class="chat-send" type="submit" data-session-send aria-label="Send message">Send</button>
+            </div>
+            <button class="chat-end" type="button" data-end-chat>End chat</button>
           </div>
           <p class="chat-status" data-chat-status role="status" aria-live="polite"></p>
         </form>
