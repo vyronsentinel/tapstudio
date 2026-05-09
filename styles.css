@@ -2165,6 +2165,8 @@ h3 {
 
   .booking-collage {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
+    grid-auto-rows: auto;
     gap: 8px;
     margin-top: 0;
   }
@@ -2194,6 +2196,11 @@ h3 {
 
   .booking-actions {
     margin-top: 20px;
+    padding-right: 0;
+  }
+
+  .booking-actions > .button:first-child {
+    min-height: 48px;
   }
 
   .process-steps article {
@@ -2275,12 +2282,12 @@ h3 {
 
   .chat-widget {
     right: 14px;
-    bottom: 14px;
+    bottom: 78px;
   }
 
   .chat-toggle {
-    min-height: 50px;
-    padding-inline: 16px;
+    min-height: 46px;
+    padding-inline: 14px;
   }
 
   .chat-panel {
