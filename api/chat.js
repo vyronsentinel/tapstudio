@@ -1,4 +1,16 @@
 const SESSION_TTL_SECONDS = 60 * 60 * 24;
+const {
+  clean,
+  clamp,
+  escapeHtml,
+  hasFilledHoneypot,
+  isReasonableText,
+  parseBody,
+  rateLimit,
+  requireAllowedOrigin,
+  sendJson,
+  verifyTurnstile,
+} = require("./security");
 
 const memoryStore = globalThis.__tapStudioChatStore || {
   messageSessions: new Map(),
@@ -7,23 +19,6 @@ const memoryStore = globalThis.__tapStudioChatStore || {
 };
 
 globalThis.__tapStudioChatStore = memoryStore;
-
-const clean = (value) => String(value || "").trim();
-const clamp = (value, limit) => clean(value).slice(0, limit);
-
-const sendJson = (response, status, payload) => {
-  response.statusCode = status;
-  response.setHeader("Content-Type", "application/json");
-  response.end(JSON.stringify(payload));
-};
-
-const parseBody = (request) => {
-  if (!request.body || typeof request.body === "object") {
-    return request.body || {};
-  }
-
-  return JSON.parse(request.body);
-};
 
 const hasRedis = () => Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
 
@@ -142,31 +137,25 @@ const sendTelegramMessage = async ({ text, replyToMessageId, forceReply = false 
   return data.result;
 };
 
-const escapeHtml = (value) =>
-  clean(value).replace(/[&<>"']/g, (character) => {
-    const replacements = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-    };
-
-    return replacements[character];
-  });
-
 const handleSend = async (request, response) => {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return sendJson(response, 405, { error: "Method not allowed" });
   }
 
+  if (!requireAllowedOrigin(request, response)) return;
+  if (!rateLimit(request, response, "chat-send", 8)) return;
+
   let body;
 
   try {
     body = parseBody(request);
-  } catch {
-    return sendJson(response, 400, { error: "Invalid request body" });
+  } catch (error) {
+    return sendJson(response, error.status || 400, { error: error.message || "Invalid request body" });
+  }
+
+  if (hasFilledHoneypot(body)) {
+    return sendJson(response, 200, { ok: true });
   }
 
   const sessionId = clamp(body.sessionId, 80).replace(/[^a-zA-Z0-9_-]/g, "");
@@ -176,6 +165,14 @@ const handleSend = async (request, response) => {
 
   if (!sessionId || !name || !contact || !message) {
     return sendJson(response, 400, { error: "Please complete all fields" });
+  }
+
+  if (!isReasonableText(message)) {
+    return sendJson(response, 400, { error: "Please send a message without links" });
+  }
+
+  if (!(await verifyTurnstile(request, body?.turnstileToken))) {
+    return sendJson(response, 400, { error: "Please complete the security check" });
   }
 
   const text = [
@@ -200,6 +197,9 @@ const handleSend = async (request, response) => {
 };
 
 const handleUpdates = async (request, response) => {
+  if (!requireAllowedOrigin(request, response)) return;
+  if (!rateLimit(request, response, "chat-updates", 60)) return;
+
   const url = new URL(request.url, `https://${request.headers.host || "localhost"}`);
   const sessionId = clean(url.searchParams.get("sessionId")).replace(/[^a-zA-Z0-9_-]/g, "");
   const after = Number(url.searchParams.get("after") || 0);
@@ -253,12 +253,15 @@ const handleEnd = async (request, response) => {
     return sendJson(response, 405, { error: "Method not allowed" });
   }
 
+  if (!requireAllowedOrigin(request, response)) return;
+  if (!rateLimit(request, response, "chat-end", 10)) return;
+
   let body;
 
   try {
     body = parseBody(request);
-  } catch {
-    return sendJson(response, 400, { error: "Invalid request body" });
+  } catch (error) {
+    return sendJson(response, error.status || 400, { error: error.message || "Invalid request body" });
   }
 
   const sessionId = clamp(body.sessionId, 80).replace(/[^a-zA-Z0-9_-]/g, "");
@@ -290,6 +293,18 @@ const handleEnd = async (request, response) => {
 const handleTelegram = async (request, response) => {
   if (request.method !== "POST") {
     return sendJson(response, 200, { ok: true });
+  }
+
+  const webhookSecret = clean(process.env.TELEGRAM_WEBHOOK_SECRET);
+
+  if (webhookSecret) {
+    const suppliedSecret = clean(request.headers["x-telegram-bot-api-secret-token"]);
+    const url = new URL(request.url, `https://${request.headers.host || "localhost"}`);
+    const querySecret = clean(url.searchParams.get("secret"));
+
+    if (suppliedSecret !== webhookSecret && querySecret !== webhookSecret) {
+      return sendJson(response, 403, { ok: false });
+    }
   }
 
   let update;

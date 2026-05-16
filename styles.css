@@ -1268,7 +1268,8 @@ h3 {
 }
 
 .photo-modal,
-.pricing-modal {
+.pricing-modal,
+.booking-modal {
   width: min(1120px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   border: 0;
@@ -1305,7 +1306,8 @@ h3 {
 }
 
 .photo-modal::backdrop,
-.pricing-modal::backdrop {
+.pricing-modal::backdrop,
+.booking-modal::backdrop {
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(18px);
 }
@@ -1364,7 +1366,8 @@ h3 {
   overflow: auto;
 }
 
-.pricing-shell {
+.pricing-shell,
+.booking-shell {
   position: relative;
   padding: clamp(22px, 4vw, 44px);
   background:
@@ -1376,7 +1379,8 @@ h3 {
   overflow: hidden;
 }
 
-.pricing-shell::before {
+.pricing-shell::before,
+.booking-shell::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1387,7 +1391,8 @@ h3 {
   opacity: 0.9;
 }
 
-.pricing-header {
+.pricing-header,
+.booking-modal-header {
   position: relative;
   z-index: 1;
   display: grid;
@@ -1399,7 +1404,8 @@ h3 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.pricing-header img {
+.pricing-header img,
+.booking-modal-header img {
   width: 96px;
   height: 96px;
   object-fit: contain;
@@ -1409,12 +1415,14 @@ h3 {
 }
 
 .pricing-header .eyebrow,
+.booking-modal-header .eyebrow,
 .pricing-section h3,
 .price-card span {
   color: var(--gold);
 }
 
-.pricing-header h2 {
+.pricing-header h2,
+.booking-modal-header h2 {
   font-size: clamp(34px, 5vw, 68px);
   color: var(--white);
 }
@@ -1510,6 +1518,83 @@ h3 {
 
 .reminder-grid li + li {
   margin-top: 7px;
+}
+
+.booking-modal {
+  width: min(920px, calc(100vw - 32px));
+  overflow: auto;
+}
+
+.booking-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 16px;
+}
+
+.booking-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.booking-form label {
+  display: grid;
+  gap: 7px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.booking-form input,
+.booking-form select {
+  min-height: 46px;
+  padding: 0 13px;
+}
+
+.booking-form textarea {
+  min-height: 118px;
+  resize: vertical;
+  padding: 13px;
+}
+
+.booking-form-wide {
+  grid-column: 1 / -1;
+}
+
+.booking-form-note,
+.booking-status {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.booking-submit {
+  width: fit-content;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.booking-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.booking-status {
+  min-height: 20px;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .chat-widget {
@@ -1802,6 +1887,24 @@ h3 {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+.security-field {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.turnstile-holder {
+  position: fixed;
+  inset: auto 0 0 auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .chat-form .chat-session-message textarea {
@@ -2245,20 +2348,23 @@ h3 {
     max-height: calc(100vh - 92px);
   }
 
-  .pricing-modal {
+  .pricing-modal,
+  .booking-modal {
     width: calc(100vw - 20px);
     max-height: calc(100svh - 20px);
     overscroll-behavior: contain;
   }
 
-  .pricing-shell {
+  .pricing-shell,
+  .booking-shell {
     padding: 18px;
     background:
       radial-gradient(circle at 10% 0%, rgba(255, 244, 191, 0.2), transparent 28%),
       linear-gradient(160deg, rgba(13, 13, 15, 0.98) 0%, rgba(55, 4, 10, 0.98) 54%, rgba(142, 0, 12, 0.98) 100%);
   }
 
-  .pricing-modal .modal-close {
+  .pricing-modal .modal-close,
+  .booking-modal .modal-close {
     position: sticky;
     top: 0;
     right: auto;
@@ -2273,25 +2379,30 @@ h3 {
     color: var(--ink);
   }
 
-  .pricing-header {
+  .pricing-header,
+  .booking-modal-header {
     gap: 14px;
     margin-bottom: 18px;
     padding-bottom: 18px;
   }
 
   .pricing-header,
+  .booking-modal-header,
+  .booking-form-grid,
   .packages,
   .rate-grid,
   .reminder-grid {
     grid-template-columns: 1fr;
   }
 
-  .pricing-header img {
+  .pricing-header img,
+  .booking-modal-header img {
     width: 58px;
     height: 58px;
   }
 
-  .pricing-header h2 {
+  .pricing-header h2,
+  .booking-modal-header h2 {
     font-size: clamp(28px, 8vw, 36px);
   }
 
@@ -2317,6 +2428,19 @@ h3 {
 
   .pricing-section h3 {
     font-size: clamp(24px, 8vw, 34px);
+  }
+
+  .booking-form input,
+  .booking-form select {
+    min-height: 44px;
+  }
+
+  .booking-form textarea {
+    min-height: 96px;
+  }
+
+  .booking-submit {
+    width: 100%;
   }
 
   .chat-widget {

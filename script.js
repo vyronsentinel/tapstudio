@@ -5,12 +5,16 @@ const photoModal = document.querySelector("#photoModal");
 const photoModalImage = photoModal?.querySelector("img");
 const photoModalCaption = photoModal?.querySelector("p");
 const pricingModal = document.querySelector("#pricingModal");
+const bookingModal = document.querySelector("#bookingModal");
 const pages = Array.from(document.querySelectorAll(".page"));
 const chatWidget = document.querySelector(".chat-widget");
 const chatToggle = document.querySelector("[data-chat-toggle]");
 const chatPanel = document.querySelector("#inquiryChat");
 const chatClose = document.querySelector("[data-chat-close]");
 const chatForm = document.querySelector("[data-chat-form]");
+const bookingForm = document.querySelector("[data-booking-form]");
+const bookingStatus = document.querySelector("[data-booking-status]");
+const bookingDateInput = bookingForm?.querySelector('input[name="date"]');
 const chatCompose = document.querySelector("[data-chat-compose]");
 const chatSession = document.querySelector("[data-chat-session]");
 const endChatButton = document.querySelector("[data-end-chat]");
@@ -28,6 +32,63 @@ let chatUnreadCount = 0;
 const chatIntroMessage = "Hi! Send your question here and TAP Studio will reply in this chat.";
 const chatStaffName = "TAP Studio";
 const chatStaffLogo = "assets/tapstudiologo.png";
+const turnstileSiteKey = document.querySelector('meta[name="turnstile-site-key"]')?.content.trim();
+let turnstileLoadPromise;
+
+const loadTurnstile = () => {
+  if (!turnstileSiteKey) return Promise.resolve();
+  if (window.turnstile) return Promise.resolve();
+  if (turnstileLoadPromise) return turnstileLoadPromise;
+
+  turnstileLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("Security check could not load"));
+    document.head.append(script);
+  });
+
+  return turnstileLoadPromise;
+};
+
+const getTurnstileToken = async (action) => {
+  if (!turnstileSiteKey) return "";
+
+  await loadTurnstile();
+
+  if (!window.turnstile) {
+    throw new Error("Security check is unavailable");
+  }
+
+  const container = document.createElement("div");
+  container.className = "turnstile-holder";
+  document.body.append(container);
+
+  return new Promise((resolve, reject) => {
+    const widgetId = window.turnstile.render(container, {
+      sitekey: turnstileSiteKey,
+      action,
+      size: "invisible",
+      execution: "execute",
+      callback: (token) => {
+        container.remove();
+        resolve(token);
+      },
+      "error-callback": () => {
+        container.remove();
+        reject(new Error("Security check failed"));
+      },
+      "timeout-callback": () => {
+        container.remove();
+        reject(new Error("Security check timed out"));
+      },
+    });
+
+    window.turnstile.execute(widgetId);
+  });
+};
 
 const playPageTransition = () => {
   document.body.classList.remove("is-page-changing");
@@ -102,7 +163,7 @@ const revealObserver = new IntersectionObserver(
 reveals.forEach((item) => revealObserver.observe(item));
 
 const snapToPage = (direction) => {
-  if (!root || isSnapping || window.innerWidth <= 920 || photoModal?.open || pricingModal?.open) return;
+  if (!root || isSnapping || window.innerWidth <= 920 || photoModal?.open || pricingModal?.open || bookingModal?.open) return;
 
   const current = Math.round(root.scrollTop / root.clientHeight);
   const next = Math.max(0, Math.min(pages.length - 1, current + direction));
@@ -174,15 +235,69 @@ document.querySelectorAll("[data-open-pricing]").forEach((button) => {
   button.addEventListener("click", () => openDialog(pricingModal));
 });
 
+document.querySelectorAll("[data-open-booking]").forEach((button) => {
+  button.addEventListener("click", () => openDialog(bookingModal));
+});
+
+if (bookingDateInput) {
+  bookingDateInput.min = new Date().toISOString().slice(0, 10);
+}
+
 document.querySelector("[data-close-photo]")?.addEventListener("click", () => closeDialog(photoModal));
 document.querySelector("[data-close-pricing]")?.addEventListener("click", () => closeDialog(pricingModal));
+document.querySelector("[data-close-booking]")?.addEventListener("click", () => closeDialog(bookingModal));
 
-[photoModal, pricingModal].forEach((dialog) => {
+[photoModal, pricingModal, bookingModal].forEach((dialog) => {
   dialog?.addEventListener("click", (event) => {
     if (event.target === dialog) {
       closeDialog(dialog);
     }
   });
+});
+
+bookingForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!bookingStatus) return;
+
+  const submitButton = event.submitter || bookingForm.querySelector('button[type="submit"]');
+
+  if (submitButton?.disabled) return;
+
+  const formData = new FormData(bookingForm);
+  const payload = Object.fromEntries(formData.entries());
+
+  bookingStatus.textContent = "Sending booking request...";
+  if (submitButton) {
+    submitButton.disabled = true;
+  }
+
+  try {
+    payload.turnstileToken = await getTurnstileToken("booking");
+
+    const response = await fetch("/api/book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || "Booking failed");
+    }
+
+    bookingForm.reset();
+    bookingStatus.textContent = "Booking request sent. Please check your email for the calendar invitation.";
+  } catch (error) {
+    bookingStatus.textContent = error.message || "Booking failed. Please try again.";
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
+  }
 });
 
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
@@ -561,6 +676,7 @@ chatForm?.addEventListener("submit", async (event) => {
     name: isSessionActive ? visitor.name || "Website visitor" : formData.get("name"),
     contact: isSessionActive ? visitor.contact || "Live chat session" : formData.get("contact"),
     message: isSessionActive ? formData.get("sessionMessage") : formData.get("message"),
+    website: formData.get("website"),
   };
 
   chatStatus.textContent = "Sending...";
@@ -571,6 +687,8 @@ chatForm?.addEventListener("submit", async (event) => {
   setChatBubbleStatus(visitorBubble, "Sending");
 
   try {
+    payload.turnstileToken = await getTurnstileToken("chat");
+
     const response = await fetch("/api/chat?mode=send", {
       method: "POST",
       headers: {

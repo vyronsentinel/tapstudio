@@ -1,18 +1,22 @@
-const clean = (value) => String(value || "").trim();
-
-const clamp = (value, limit) => clean(value).slice(0, limit);
-
-const sendJson = (response, status, payload) => {
-  response.statusCode = status;
-  response.setHeader("Content-Type", "application/json");
-  response.end(JSON.stringify(payload));
-};
+const {
+  clamp,
+  hasFilledHoneypot,
+  isReasonableText,
+  parseBody,
+  rateLimit,
+  requireAllowedOrigin,
+  sendJson,
+  verifyTurnstile,
+} = require("./security");
 
 module.exports = async (request, response) => {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return sendJson(response, 405, { error: "Method not allowed" });
   }
+
+  if (!requireAllowedOrigin(request, response)) return;
+  if (!rateLimit(request, response, "inquiry", 5)) return;
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -21,14 +25,16 @@ module.exports = async (request, response) => {
     return sendJson(response, 500, { error: "Telegram is not configured" });
   }
 
-  let body = request.body;
+  let body;
 
-  if (typeof body === "string") {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      return sendJson(response, 400, { error: "Invalid request body" });
-    }
+  try {
+    body = parseBody(request);
+  } catch (error) {
+    return sendJson(response, error.status || 400, { error: error.message || "Invalid request body" });
+  }
+
+  if (hasFilledHoneypot(body)) {
+    return sendJson(response, 200, { ok: true });
   }
 
   const name = clamp(body?.name, 80);
@@ -37,6 +43,14 @@ module.exports = async (request, response) => {
 
   if (!name || !contact || !message) {
     return sendJson(response, 400, { error: "Please complete all fields" });
+  }
+
+  if (!isReasonableText(message)) {
+    return sendJson(response, 400, { error: "Please send a message without links" });
+  }
+
+  if (!(await verifyTurnstile(request, body?.turnstileToken))) {
+    return sendJson(response, 400, { error: "Please complete the security check" });
   }
 
   const text = [

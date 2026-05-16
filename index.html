@@ -26,6 +26,7 @@
     <meta name="twitter:image" content="assets/glam-red-full.jpg">
     <link rel="icon" type="image/png" href="assets/tapstudiologo.png">
     <link rel="apple-touch-icon" href="assets/tapstudiologo.png">
+    <meta name="turnstile-site-key" content="0x4AAAAAADQjM0agXKDiecsYqoTHdBqtcWc">
     <link rel="stylesheet" href="styles.css?v=2">
     <script type="application/ld+json">
       {
@@ -84,7 +85,7 @@
         <a href="#experience">Experience</a>
         <a href="#visit">Visit</a>
         <button class="nav-button" type="button" data-open-pricing>Pricing</button>
-        <a href="#booking">Book</a>
+        <button class="nav-button" type="button" data-open-booking>Book</button>
       </nav>
       <button class="header-cta" type="button" data-open-pricing>Pricing</button>
     </header>
@@ -103,7 +104,7 @@
             families, couples, and personal milestones in San Pablo City.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#booking">Start a booking</a>
+            <button class="button primary" type="button" data-open-booking>Start a booking</button>
             <button class="button secondary" type="button" data-open-pricing>View pricing</button>
           </div>
         </div>
@@ -254,7 +255,7 @@
           </div>
           <div class="visit-actions">
             <a class="button primary" href="https://www.google.com/maps/search/?api=1&query=TAP%20Studio%2038FF%2BJJM%20San%20Pablo%20City%20Laguna" target="_blank" rel="noopener noreferrer">Open map</a>
-            <a class="button secondary" href="#booking">Book now</a>
+            <button class="button secondary" type="button" data-open-booking>Book now</button>
           </div>
         </div>
       </section>
@@ -273,6 +274,7 @@
             Visit TAP Studio at Lauro Dizon St, San Pablo City, 4000 Laguna.
           </p>
           <div class="booking-actions">
+            <button class="button primary" type="button" data-open-booking>Book now</button>
             <button class="button secondary" type="button" data-open-pricing>View pricing</button>
             <div class="social-links" aria-label="TAP Studio social media">
               <a class="button secondary social-link" href="https://www.facebook.com/tapstudio07" target="_blank" rel="noopener noreferrer" aria-label="Message TAP Studio on Facebook" title="Facebook">
@@ -403,6 +405,72 @@
       </div>
     </dialog>
 
+    <dialog class="booking-modal" id="bookingModal" aria-labelledby="bookingModalTitle">
+      <div class="booking-shell">
+        <button class="modal-close" type="button" data-close-booking aria-label="Close booking">Close</button>
+        <div class="booking-modal-header">
+          <img src="assets/tapstudiologo.png" alt="">
+          <div>
+            <p class="eyebrow">Reserve a session</p>
+            <h2 id="bookingModalTitle">Book TAP Studio</h2>
+          </div>
+        </div>
+
+        <form class="booking-form" data-booking-form>
+          <label class="security-field" aria-hidden="true">
+            Website
+            <input name="website" tabindex="-1" autocomplete="off">
+          </label>
+          <div class="booking-form-grid">
+            <label>
+              Full name
+              <input name="name" autocomplete="name" required>
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label>
+              Contact number
+              <input name="contact" autocomplete="tel" required>
+            </label>
+            <label>
+              Package
+              <select name="package" required>
+                <option value="">Choose a package</option>
+                <option value="Solo">Solo - ₱449.00</option>
+                <option value="Duo">Duo - ₱599.00</option>
+                <option value="Groupies">Groupies - ₱799.00</option>
+              </select>
+            </label>
+            <label>
+              Preferred date
+              <input name="date" type="date" required>
+            </label>
+            <label>
+              Preferred time
+              <input name="time" type="time" required>
+            </label>
+            <label>
+              Number of guests
+              <input name="guests" type="number" min="1" max="20" value="1" required>
+            </label>
+            <label>
+              Add-ons
+              <input name="addons" placeholder="Backdrop, prints, gown, make-up, etc.">
+            </label>
+            <label class="booking-form-wide">
+              Notes
+              <textarea name="notes" rows="4" placeholder="Tell us the occasion, preferred backdrop, or special requests"></textarea>
+            </label>
+          </div>
+          <p class="booking-form-note">Submitting adds your request to TAP Studio's calendar and sends a Google Calendar invitation to your email.</p>
+          <button class="button primary booking-submit" type="submit">Confirm booking request</button>
+          <p class="booking-status" data-booking-status role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </dialog>
+
     <section class="chat-widget" aria-label="TAP Studio inquiry chat">
       <button class="chat-toggle" type="button" aria-expanded="false" aria-controls="inquiryChat" data-chat-toggle>
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -422,6 +490,10 @@
         </div>
 
         <form class="chat-form" data-chat-form>
+          <label class="security-field" aria-hidden="true">
+            Website
+            <input name="website" tabindex="-1" autocomplete="off">
+          </label>
           <div class="chat-log" data-chat-log aria-live="polite">
             <p class="chat-bubble staff">Hi! Send your question here and TAP Studio will reply in this chat.</p>
           </div>
