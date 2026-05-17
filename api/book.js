@@ -18,6 +18,33 @@ const packageDurations = {
   Groupies: 30,
 };
 
+const sendTelegramBooking = async (lines) => {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    throw new Error("Booking notifications are not configured");
+  }
+
+  const telegramResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: lines.join("\n"),
+      disable_web_page_preview: true,
+    }),
+  });
+
+  const data = await telegramResponse.json().catch(() => ({}));
+
+  if (!telegramResponse.ok || data.ok === false) {
+    throw new Error(data.description || "Booking notification failed");
+  }
+};
+
 const base64UrlEncode = (value) =>
   Buffer.from(value)
     .toString("base64")
@@ -94,12 +121,6 @@ module.exports = async (request, response) => {
   if (!requireAllowedOrigin(request, response)) return;
   if (!rateLimit(request, response, "booking", 4)) return;
 
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
-
-  if (!calendarId) {
-    return sendJson(response, 500, { error: "Google Calendar is not configured" });
-  }
-
   let body;
 
   try {
@@ -158,6 +179,35 @@ module.exports = async (request, response) => {
   }
 
   const end = new Date(bookingDate.start.getTime() + duration * 60 * 1000);
+  const schedule = `${date} ${time} (${bookingDate.timezone})`;
+  const bookingLines = [
+    "New TAP Studio booking request",
+    "",
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Contact: ${contact}`,
+    `Package: ${selectedPackage}`,
+    `Schedule: ${schedule}`,
+    `Guests: ${guestCount}`,
+    addons ? `Add-ons: ${addons}` : "",
+    notes ? `Notes: ${notes}` : "",
+  ].filter(Boolean);
+
+  try {
+    await sendTelegramBooking(bookingLines);
+  } catch (error) {
+    return sendJson(response, 502, { error: error.message || "Booking request failed" });
+  }
+
+  const calendarId = process.env.GOOGLE_CALENDAR_ID;
+  const hasGoogleCalendar = Boolean(
+    calendarId && process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY
+  );
+
+  if (!hasGoogleCalendar) {
+    return sendJson(response, 200, { ok: true, notification: "telegram" });
+  }
+
   const studioEmail = clean(process.env.STUDIO_EMAIL);
   const attendees = [{ email, displayName: name }];
 

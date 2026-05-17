@@ -309,7 +309,7 @@ bookingForm?.addEventListener("submit", async (event) => {
     }
 
     bookingForm.reset();
-    bookingStatus.textContent = "Booking request sent. Please check your email for the calendar invitation.";
+    bookingStatus.textContent = "Booking request sent. TAP Studio will confirm your schedule soon.";
   } catch (error) {
     bookingStatus.textContent = error.message || "Booking failed. Please try again.";
   } finally {
