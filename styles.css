@@ -1366,6 +1366,38 @@ h3 {
   overflow: auto;
 }
 
+.pricing-modal,
+.booking-modal {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(231, 199, 112, 0.78) rgba(18, 13, 14, 0.34);
+}
+
+.pricing-modal::-webkit-scrollbar,
+.booking-modal::-webkit-scrollbar {
+  width: 10px;
+}
+
+.pricing-modal::-webkit-scrollbar-track,
+.booking-modal::-webkit-scrollbar-track {
+  background: rgba(18, 13, 14, 0.34);
+  border-radius: 999px;
+}
+
+.pricing-modal::-webkit-scrollbar-thumb,
+.booking-modal::-webkit-scrollbar-thumb {
+  min-height: 64px;
+  border: 2px solid rgba(18, 13, 14, 0.34);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 244, 191, 0.94), rgba(184, 0, 16, 0.76));
+}
+
+.pricing-modal::-webkit-scrollbar-thumb:hover,
+.booking-modal::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 244, 191, 1), rgba(216, 24, 39, 0.9));
+}
+
 .pricing-shell,
 .booking-shell {
   position: relative;
@@ -2389,6 +2421,12 @@ h3 {
     width: calc(100vw - 20px);
     max-height: calc(100svh - 20px);
     overscroll-behavior: contain;
+    scrollbar-color: rgba(231, 199, 112, 0.72) rgba(18, 13, 14, 0.22);
+  }
+
+  .pricing-modal::-webkit-scrollbar,
+  .booking-modal::-webkit-scrollbar {
+    width: 6px;
   }
 
   .pricing-shell,
