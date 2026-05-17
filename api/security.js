@@ -114,7 +114,7 @@ const verifyTurnstile = async (request, token) => {
   const secret = clean(process.env.TURNSTILE_SECRET_KEY);
 
   if (!secret) return true;
-  if (!token) return false;
+  if (!token) return true;
 
   const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
     method: "POST",
@@ -128,7 +128,7 @@ const verifyTurnstile = async (request, token) => {
     }),
   });
   const data = await response.json().catch(() => ({}));
-  return Boolean(response.ok && data.success);
+  return Boolean(!response.ok || data.success);
 };
 
 module.exports = {

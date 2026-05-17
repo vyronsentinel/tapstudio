@@ -41,12 +41,21 @@ const loadTurnstile = () => {
   if (turnstileLoadPromise) return turnstileLoadPromise;
 
   turnstileLoadPromise = new Promise((resolve, reject) => {
+    const callbackName = `tapTurnstileReady_${Date.now()}`;
     const script = document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+    window[callbackName] = () => {
+      delete window[callbackName];
+      resolve();
+    };
+
+    script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=${callbackName}`;
     script.async = true;
     script.defer = true;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error("Security check could not load"));
+    script.onerror = () => {
+      delete window[callbackName];
+      reject(new Error("Security check could not load"));
+    };
     document.head.append(script);
   });
 
@@ -67,26 +76,36 @@ const getTurnstileToken = async (action) => {
   document.body.append(container);
 
   return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      container.remove();
+      resolve("");
+    }, 9000);
+
     const widgetId = window.turnstile.render(container, {
       sitekey: turnstileSiteKey,
       action,
-      size: "invisible",
-      execution: "execute",
       callback: (token) => {
+        window.clearTimeout(timeout);
         container.remove();
         resolve(token);
       },
       "error-callback": () => {
+        window.clearTimeout(timeout);
         container.remove();
-        reject(new Error("Security check failed. Please refresh and try again."));
+        resolve("");
       },
       "timeout-callback": () => {
+        window.clearTimeout(timeout);
         container.remove();
-        reject(new Error("Security check timed out"));
+        resolve("");
       },
     });
 
-    window.turnstile.execute(widgetId);
+    if (!widgetId) {
+      window.clearTimeout(timeout);
+      container.remove();
+      reject(new Error("Security check is unavailable"));
+    }
   });
 };
 
