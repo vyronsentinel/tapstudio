@@ -20,7 +20,7 @@ const packageDurations = {
 
 const sendTelegramBooking = async (lines) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = process.env.TELEGRAM_BOOKING_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
     throw new Error("Booking notifications are not configured");
