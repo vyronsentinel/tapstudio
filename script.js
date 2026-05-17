@@ -78,7 +78,7 @@ const getTurnstileToken = async (action) => {
       },
       "error-callback": () => {
         container.remove();
-        reject(new Error("Security check failed"));
+        reject(new Error("Security check failed. Please refresh and try again."));
       },
       "timeout-callback": () => {
         container.remove();
@@ -683,11 +683,12 @@ chatForm?.addEventListener("submit", async (event) => {
   if (submitButton) {
     submitButton.disabled = true;
   }
-  const visitorBubble = appendChatBubble(payload.message, "visitor");
-  setChatBubbleStatus(visitorBubble, "Sending");
+  let visitorBubble;
 
   try {
     payload.turnstileToken = await getTurnstileToken("chat");
+    visitorBubble = appendChatBubble(payload.message, "visitor");
+    setChatBubbleStatus(visitorBubble, "Sending");
 
     const response = await fetch("/api/chat?mode=send", {
       method: "POST",
@@ -712,7 +713,9 @@ chatForm?.addEventListener("submit", async (event) => {
     chatStatus.textContent = "";
     startChatPolling();
   } catch (error) {
-    setChatBubbleStatus(visitorBubble, "Not sent");
+    if (visitorBubble) {
+      setChatBubbleStatus(visitorBubble, "Not sent");
+    }
     chatStatus.textContent = error.message || "Message failed. Please try again.";
   } finally {
     if (submitButton) {
